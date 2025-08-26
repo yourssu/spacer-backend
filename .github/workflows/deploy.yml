@@ -1,0 +1,57 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Github Repository 파일 불러오기
+        uses: actions/checkout@v4
+
+      - name: JDK 21버전 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: resources 디렉터리 생성
+        run: |
+          mkdir -p ./src/main/resources/
+
+      - name: application.yml 파일 생성
+        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
+
+      - name: 테스트 및 빌드하기
+        run: ./gradlew clean build
+
+      - name: 빌드된 파일 이름 변경하기
+        run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
+
+      - name: SCP로 EC2에 빌드된 파일 전송하기
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: project.jar
+          target: /home/ubuntu/spacer/tobe
+
+      - name: SSH로 EC2에 접속하기
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            rm -rf /home/ubuntu/spacer/current
+            mkdir /home/ubuntu/spacer/current
+            mv /home/ubuntu/spacer/tobe/project.jar /home/ubuntu/spacer/current/project.jar
+            cd /home/ubuntu/spacer/current
+            sudo fuser -k -n tcp 8082 || true
+            sudo nohup java -jar project.jar > ./output.log 2>&1 & 
+            rm -rf /home/ubuntu/spacer/tobe
