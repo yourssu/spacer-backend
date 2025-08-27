@@ -1,13 +1,19 @@
 package com.yourssu.spacer.spacehub.business.domain.organization
 
-import com.yourssu.spacer.spacehub.business.domain.authentication.PrivateClaims
+import com.yourssu.spacer.spacehub.implement.domain.authentication.PrivateClaims
 import com.yourssu.spacer.spacehub.business.domain.authentication.TokenDto
-import com.yourssu.spacer.spacehub.business.domain.file.FileProcessor
-import com.yourssu.spacer.spacehub.business.domain.password.PasswordFormat
-import com.yourssu.spacer.spacehub.business.domain.password.PasswordValidator
+import com.yourssu.spacer.spacehub.implement.domain.file.FileProcessor
+import com.yourssu.spacer.spacehub.implement.support.security.password.PasswordFormat
+import com.yourssu.spacer.spacehub.implement.support.security.password.PasswordValidator
+import com.yourssu.spacer.spacehub.business.support.exception.DuplicateEmailException
+import com.yourssu.spacer.spacehub.business.support.exception.UnauthorizedOrganizationException
 import com.yourssu.spacer.spacehub.business.support.security.password.PasswordEncoder
 import com.yourssu.spacer.spacehub.business.support.security.token.TokenEncoder
-import com.yourssu.spacer.spacehub.business.support.security.token.TokenType
+import com.yourssu.spacer.spacehub.implement.domain.authentication.TokenType
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationName
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationReader
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationWriter
 import java.time.LocalDateTime
 import org.springframework.stereotype.Service
 

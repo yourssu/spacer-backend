@@ -3,7 +3,7 @@ package com.yourssu.spacer.spacehub.application.domain.authentication
 import com.yourssu.spacer.spacehub.business.domain.authentication.AuthenticationService
 import com.yourssu.spacer.spacehub.business.domain.authentication.LoginResultDto
 import com.yourssu.spacer.spacehub.business.domain.authentication.TokenDto
-import com.yourssu.spacer.spacehub.business.support.security.token.TokenType
+import com.yourssu.spacer.spacehub.implement.domain.authentication.TokenType
 import jakarta.validation.Valid
 import java.time.LocalDateTime
 import org.springframework.http.HttpHeaders

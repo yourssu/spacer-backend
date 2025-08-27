@@ -1,7 +1,7 @@
 package com.yourssu.spacer.spacehub.storage.domain.reservation
 
-import com.yourssu.spacer.spacehub.business.domain.reservation.Reservation
-import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationTime
+import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
+import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationTime
 import com.yourssu.spacer.spacehub.storage.domain.space.SpaceEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

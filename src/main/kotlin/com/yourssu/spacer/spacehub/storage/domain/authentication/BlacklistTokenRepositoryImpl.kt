@@ -1,7 +1,7 @@
 package com.yourssu.spacer.spacehub.storage.domain.authentication
 
-import com.yourssu.spacer.spacehub.business.domain.authentication.BlacklistToken
-import com.yourssu.spacer.spacehub.business.domain.authentication.BlacklistTokenRepository
+import com.yourssu.spacer.spacehub.implement.domain.authentication.BlacklistToken
+import com.yourssu.spacer.spacehub.implement.domain.authentication.BlacklistTokenRepository
 import org.springframework.stereotype.Repository
 
 @Repository

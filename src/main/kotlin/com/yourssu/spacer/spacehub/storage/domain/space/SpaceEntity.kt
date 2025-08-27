@@ -1,8 +1,8 @@
 package com.yourssu.spacer.spacehub.storage.domain.space
 
-import com.yourssu.spacer.spacehub.business.domain.space.Capacity
-import com.yourssu.spacer.spacehub.business.domain.space.Space
-import com.yourssu.spacer.spacehub.business.domain.space.SpaceOperatingTime
+import com.yourssu.spacer.spacehub.implement.domain.space.Capacity
+import com.yourssu.spacer.spacehub.implement.domain.space.Space
+import com.yourssu.spacer.spacehub.implement.domain.space.SpaceOperatingTime
 import com.yourssu.spacer.spacehub.storage.domain.organization.OrganizationEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

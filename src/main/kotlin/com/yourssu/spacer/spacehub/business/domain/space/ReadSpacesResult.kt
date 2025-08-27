@@ -1,7 +1,8 @@
 package com.yourssu.spacer.spacehub.business.domain.space
 
-import com.yourssu.spacer.spacehub.business.domain.organization.Organization
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
 import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationDto
+import com.yourssu.spacer.spacehub.implement.domain.space.Space
 
 data class ReadSpacesResult(
 

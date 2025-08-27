@@ -1,5 +1,7 @@
 package com.yourssu.spacer.spacehub.business.domain.organization
 
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
+
 data class OrganizationDto(
 
     val id: Long,

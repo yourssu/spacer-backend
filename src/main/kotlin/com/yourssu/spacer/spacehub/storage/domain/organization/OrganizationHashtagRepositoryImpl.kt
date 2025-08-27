@@ -1,7 +1,7 @@
 package com.yourssu.spacer.spacehub.storage.domain.organization
 
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationHashtag
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationHashtagRepository
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationHashtag
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationHashtagRepository
 import org.springframework.stereotype.Repository
 
 @Repository

@@ -1,9 +1,14 @@
 package com.yourssu.spacer.spacehub.business.domain.space
 
-import com.yourssu.spacer.spacehub.business.domain.file.FileProcessor
-import com.yourssu.spacer.spacehub.business.domain.organization.Organization
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationReader
-import com.yourssu.spacer.spacehub.business.domain.organization.UnauthorizedOrganizationException
+import com.yourssu.spacer.spacehub.implement.domain.file.FileProcessor
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationReader
+import com.yourssu.spacer.spacehub.business.support.exception.UnauthorizedOrganizationException
+import com.yourssu.spacer.spacehub.implement.domain.space.Capacity
+import com.yourssu.spacer.spacehub.implement.domain.space.Space
+import com.yourssu.spacer.spacehub.implement.domain.space.SpaceOperatingTime
+import com.yourssu.spacer.spacehub.implement.domain.space.SpaceReader
+import com.yourssu.spacer.spacehub.implement.domain.space.SpaceWriter
 import org.springframework.stereotype.Service
 
 @Service

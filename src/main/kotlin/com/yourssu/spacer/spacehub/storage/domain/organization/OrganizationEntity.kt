@@ -1,8 +1,8 @@
 package com.yourssu.spacer.spacehub.storage.domain.organization
 
-import com.yourssu.spacer.spacehub.business.domain.organization.Email
-import com.yourssu.spacer.spacehub.business.domain.organization.Organization
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationName
+import com.yourssu.spacer.spacehub.implement.domain.organization.Email
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationName
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

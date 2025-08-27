@@ -1,7 +1,7 @@
 package com.yourssu.spacer.spacehub.storage.domain.organization
 
-import com.yourssu.spacer.spacehub.business.domain.organization.Organization
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationRepository
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 

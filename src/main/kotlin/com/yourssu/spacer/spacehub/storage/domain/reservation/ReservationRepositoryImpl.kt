@@ -1,7 +1,7 @@
 package com.yourssu.spacer.spacehub.storage.domain.reservation
 
-import com.yourssu.spacer.spacehub.business.domain.reservation.Reservation
-import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationRepository
+import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
+import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationRepository
 import java.time.LocalDateTime
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
