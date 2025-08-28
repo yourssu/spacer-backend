@@ -44,6 +44,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 }
 
 kotlin {
