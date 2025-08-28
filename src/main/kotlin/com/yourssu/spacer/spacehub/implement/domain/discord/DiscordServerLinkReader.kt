@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 class DiscordServerLinkReader(
     private val discordServerLinkRepository: DiscordServerLinkRepository
 ) {
-    fun getByDiscordServerId(discordServerId: String): DiscordServerLink? {
+    fun getByDiscordServerId(discordServerId: String): DiscordServerLink {
         return discordServerLinkRepository.findByDiscordServerId(discordServerId)
             ?: throw DiscordServerLinkNotFoundException("디스코드 서버에 등록된 단체가 아닙니다.")
     }

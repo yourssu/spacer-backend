@@ -6,12 +6,14 @@ import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationServic
 import com.yourssu.spacer.spacehub.implement.domain.discord.DiscordServerLink
 import com.yourssu.spacer.spacehub.implement.domain.discord.DiscordServerLinkReader
 import com.yourssu.spacer.spacehub.implement.domain.discord.DiscordServerLinkWriter
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationReader
 import org.springframework.stereotype.Service
 
 @Service
 class DiscordService (
     private val discordServerLinkReader: DiscordServerLinkReader,
-    private val discordServerLinkWriter: DiscordServerLinkWriter
+    private val discordServerLinkWriter: DiscordServerLinkWriter,
 ) {
     fun createServerLink(discordServerId: String, organizationId: Long) {
         val accountLink = DiscordServerLink(
@@ -19,5 +21,9 @@ class DiscordService (
             organizationId = organizationId
         )
         discordServerLinkWriter.write(accountLink)
+    }
+
+    fun getOrganizationIdByDiscordServerId(discordServerId: String): Long {
+        return discordServerLinkReader.getByDiscordServerId(discordServerId).organizationId
     }
 }
