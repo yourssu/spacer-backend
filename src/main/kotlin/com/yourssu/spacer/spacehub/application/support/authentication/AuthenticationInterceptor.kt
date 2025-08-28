@@ -1,7 +1,7 @@
 package com.yourssu.spacer.spacehub.application.support.authentication
 
 import com.yourssu.spacer.spacehub.business.domain.authentication.AuthenticationService
-import com.yourssu.spacer.spacehub.business.support.security.token.TokenType
+import com.yourssu.spacer.spacehub.implement.domain.authentication.TokenType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders

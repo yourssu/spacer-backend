@@ -1,14 +1,18 @@
 package com.yourssu.spacer.spacehub.business.domain.authentication
 
 import com.yourssu.spacer.spacehub.application.support.authentication.NoSuchOrganizationException
-import com.yourssu.spacer.spacehub.business.domain.organization.Organization
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationReader
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationWriter
+import com.yourssu.spacer.spacehub.implement.domain.organization.Organization
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationReader
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationWriter
+import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.business.support.security.password.PasswordEncoder
-import com.yourssu.spacer.spacehub.business.support.security.token.InvalidTokenException
+import com.yourssu.spacer.spacehub.implement.support.exception.InvalidTokenException
 import com.yourssu.spacer.spacehub.business.support.security.token.TokenDecoder
 import com.yourssu.spacer.spacehub.business.support.security.token.TokenEncoder
-import com.yourssu.spacer.spacehub.business.support.security.token.TokenType
+import com.yourssu.spacer.spacehub.implement.domain.authentication.TokenType
+import com.yourssu.spacer.spacehub.implement.domain.authentication.BlacklistTokenReader
+import com.yourssu.spacer.spacehub.implement.domain.authentication.BlacklistTokenWriter
+import com.yourssu.spacer.spacehub.implement.domain.authentication.PrivateClaims
 import io.jsonwebtoken.Claims
 import java.time.LocalDateTime
 import org.springframework.stereotype.Service

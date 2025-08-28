@@ -1,11 +1,17 @@
 package com.yourssu.spacer.spacehub.business.domain.reservation
 
-import com.yourssu.spacer.spacehub.business.domain.authentication.PasswordNotMatchException
-import com.yourssu.spacer.spacehub.business.domain.password.PasswordFormat
-import com.yourssu.spacer.spacehub.business.domain.password.PasswordValidator
-import com.yourssu.spacer.spacehub.business.domain.space.Space
-import com.yourssu.spacer.spacehub.business.domain.space.SpaceReader
+import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
+import com.yourssu.spacer.spacehub.implement.support.security.password.PasswordFormat
+import com.yourssu.spacer.spacehub.implement.support.security.password.PasswordValidator
+import com.yourssu.spacer.spacehub.implement.domain.space.Space
+import com.yourssu.spacer.spacehub.implement.domain.space.SpaceReader
+import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservationException
+import com.yourssu.spacer.spacehub.business.support.exception.ReservationConflictException
 import com.yourssu.spacer.spacehub.business.support.security.password.PasswordEncoder
+import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
+import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationReader
+import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationTime
+import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationWriter
 import java.time.LocalDate
 import java.time.LocalDateTime
 import org.springframework.stereotype.Service

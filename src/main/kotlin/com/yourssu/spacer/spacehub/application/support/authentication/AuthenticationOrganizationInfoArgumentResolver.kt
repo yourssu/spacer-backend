@@ -1,7 +1,7 @@
 package com.yourssu.spacer.spacehub.application.support.authentication
 
 import com.yourssu.spacer.spacehub.business.domain.authentication.AuthenticationService
-import com.yourssu.spacer.spacehub.business.support.security.token.TokenType
+import com.yourssu.spacer.spacehub.implement.domain.authentication.TokenType
 import org.springframework.core.MethodParameter
 import org.springframework.http.HttpHeaders
 import org.springframework.lang.NonNull

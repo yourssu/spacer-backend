@@ -1,6 +1,6 @@
 package com.yourssu.spacer.spacehub.storage.domain.organization
 
-import com.yourssu.spacer.spacehub.business.domain.organization.OrganizationHashtag
+import com.yourssu.spacer.spacehub.implement.domain.organization.OrganizationHashtag
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

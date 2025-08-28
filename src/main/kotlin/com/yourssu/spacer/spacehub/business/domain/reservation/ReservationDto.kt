@@ -1,6 +1,7 @@
 package com.yourssu.spacer.spacehub.business.domain.reservation
 
 import com.yourssu.spacer.spacehub.business.domain.space.SpaceDto
+import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
 import java.time.LocalDateTime
 
 data class ReservationDto(

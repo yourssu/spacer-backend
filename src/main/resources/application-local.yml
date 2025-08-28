@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+
+file:
+  upload:
+    path: ${LOCAL_USER_PATH}/spacer/uploads/
+  web:
+    path: http://localhost:8080/files/
+  default-imag-name:
+    organization: default_organization.png
+
+token:
+  jwt:
+    access-key: ${JWT_ACCESS_KEY}
+    refresh-key: ${JWT_REFRESH_KEY}
+    access-expired-hours: 1
+    refresh-expired-hours: 336
