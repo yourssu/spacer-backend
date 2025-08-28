@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 
 @Component
-@Profile("local")
+@Profile("local", "test")
 class LocalFileProcessor(
 
     @Value("\${file.upload.path}")
