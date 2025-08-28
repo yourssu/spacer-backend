@@ -26,10 +26,7 @@ class ReservationService(
 
     fun create(command: CreateReservationCommand): Long {
         val space: Space = spaceReader.getById(command.spaceId)
-
-        if (!passwordEncoder.matches(command.password, space.getEncryptedReservationPassword())) {
-            throw PasswordNotMatchException("예약 비밀번호가 일치하지 않습니다.")
-        }
+        passwordEncoder.matchesOrThrow(command.password, space.getEncryptedReservationPassword(), "예약 비밀번호가 일치하지 않습니다.")
 
         val reservationTime = ReservationTime(command.startDateTime, command.endDateTime)
         if (!space.canReserve(reservationTime)) {
@@ -71,10 +68,7 @@ class ReservationService(
 
     fun delete(reservationId: Long, personalPassword: String) {
         val reservation: Reservation = reservationReader.getById(reservationId)
-        if (!passwordEncoder.matches(personalPassword, reservation.encryptedPersonalPassword)) {
-            throw PasswordNotMatchException("예약 시 사용한 비밀번호와 일치하지 않습니다.")
-        }
-
+        passwordEncoder.matchesOrThrow(personalPassword, reservation.encryptedPersonalPassword, "예약 시 사용한 비밀번호와 일치하지 않습니다.")
         reservationWriter.delete(reservation)
     }
 }

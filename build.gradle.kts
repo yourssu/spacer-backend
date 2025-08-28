@@ -45,6 +45,9 @@ dependencies {
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
+
+    // Discord Bot (JDA)
+    implementation("net.dv8tion:JDA:5.0.0-beta.22")
 }
 
 kotlin {

@@ -30,9 +30,7 @@ class AuthenticationService(
 
     fun login(loginCommand: LoginCommand): LoginResultDto {
         val organization: Organization = organizationReader.getByEmail(loginCommand.email)
-        if (!passwordEncoder.matches(loginCommand.password, organization.encryptedPassword)) {
-            throw PasswordNotMatchException("비밀번호가 일치하지 않습니다.")
-        }
+        passwordEncoder.matchesOrThrow(loginCommand.password, organization.encryptedPassword, "비밀번호가 일치하지 않습니다.")
 
         val privateClaims = PrivateClaims(organization.id!!)
         val tokenDto: TokenDto = generateTokens(loginCommand.requestTime, privateClaims)
