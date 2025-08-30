@@ -1,11 +1,14 @@
 package com.yourssu.spacer.spacehub.application.domain.discord
 
+import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
 import com.yourssu.spacer.spacehub.business.domain.space.SpaceService
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
@@ -16,7 +19,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 @Component
-class ReservationReadHandler(
+class ReadReservationHandler(
     private val uiFactory: DiscordUIFactory,
     private val spaceService: SpaceService,
     private val reservationService: ReservationService
@@ -26,7 +29,7 @@ class ReservationReadHandler(
         val organizationId = uiFactory.getVerifiedOrganizationId(event) ?: return
 
         val selectMenu = uiFactory.createSpaceSelectMenu(
-            componentId = "space_select_read",
+            componentId = DiscordConstants.RESERVATION_READ_SPACE_SELECT,
             placeholder = "조회할 공간 선택",
             organizationId = organizationId
         )
@@ -39,7 +42,7 @@ class ReservationReadHandler(
 
     fun handleSelectMenu(event: StringSelectInteractionEvent) {
         val spaceId = event.selectedOptions.first().value
-        val modal = Modal.create("read_reservation_modal:$spaceId", "날짜 입력")
+        val modal = Modal.create("${DiscordConstants.RESERVATION_READ_MODAL}:$spaceId", "날짜 입력")
             .addActionRow(
                 TextInput.create("date", "조회할 날짜 (YYYY-MM-DD)", TextInputStyle.SHORT)
                     .setRequired(true)
@@ -75,7 +78,21 @@ class ReservationReadHandler(
                 val booker = "예약자: ${reservation.bookerName}"
                 embed.addField(title, booker, false)
             }
+
+            val selectMenu = StringSelectMenu.create(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT)
+                .setPlaceholder("취소할 예약을 선택하세요")
+                .addOptions(
+                    result.reservationDtos.sortedBy { it.startDateTime }.map {
+                        val label = "${it.startDateTime.format(timeFormatter)}~${it.endDateTime.format(timeFormatter)} (${it.bookerName})"
+                        SelectOption.of(label, it.id.toString())
+                    }
+                )
+                .build()
+
+            event.replyEmbeds(embed.build())
+                .addActionRow(selectMenu)
+                .setEphemeral(true)
+                .queue()
         }
-        event.replyEmbeds(embed.build()).setEphemeral(true).queue()
     }
 }

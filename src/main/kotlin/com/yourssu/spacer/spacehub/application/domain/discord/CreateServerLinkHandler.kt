@@ -1,5 +1,6 @@
 package com.yourssu.spacer.spacehub.application.domain.discord
 
+import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.business.domain.authentication.AuthenticationService
 import com.yourssu.spacer.spacehub.business.domain.authentication.LoginCommand
 import com.yourssu.spacer.spacehub.business.domain.discord.DiscordService
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
-class ServerRegistrationHandler(
+class CreateServerLinkHandler(
     private val discordService: DiscordService,
     private val authenticationService: AuthenticationService
 ) {
@@ -25,7 +26,7 @@ class ServerRegistrationHandler(
             discordService.getOrganizationIdByDiscordServerId(discordServerId)
             event.reply("✅ 이미 연동된 서버입니다!").setEphemeral(true).queue()
         } catch (e: DiscordServerLinkNotFoundException) {
-            val modal = Modal.create("create_org_modal:$discordServerId", "서버 등록")
+            val modal = Modal.create("${DiscordConstants.SERVER_LINK_CREATE_MODAL}:$discordServerId", "서버 등록")
                 .addActionRow(
                     TextInput.create("org_email", "이메일", TextInputStyle.SHORT).setRequired(true).build()
                 )
@@ -38,7 +39,7 @@ class ServerRegistrationHandler(
         }
     }
 
-    fun handleOrgRegistrationModal(event: ModalInteractionEvent) {
+    fun handleCreateModal(event: ModalInteractionEvent) {
         val discordServerId = event.modalId.split(":")[1]
         val loginCommand = LoginCommand(
             email = event.getValue("org_email")!!.asString,

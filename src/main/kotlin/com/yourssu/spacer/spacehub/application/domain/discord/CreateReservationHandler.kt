@@ -1,5 +1,6 @@
 package com.yourssu.spacer.spacehub.application.domain.discord
 
+import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.business.domain.reservation.CreateReservationCommand
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
 import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservationException
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
 @Component
-class ReservationCreationHandler(
+class CreateReservationHandler(
     private val reservationService: ReservationService,
     private val uiFactory: DiscordUIFactory
 ) {
@@ -24,7 +25,7 @@ class ReservationCreationHandler(
         val organizationId = uiFactory.getVerifiedOrganizationId(event) ?: return
 
         val selectMenu = uiFactory.createSpaceSelectMenu(
-            componentId = "space_select_create",
+            componentId = DiscordConstants.RESERVATION_CREATE_SPACE_SELECT,
             placeholder = "예약할 공간 선택",
             organizationId = organizationId
         )
@@ -37,7 +38,7 @@ class ReservationCreationHandler(
 
     fun handleSelectMenu(event: StringSelectInteractionEvent) {
         val spaceId = event.selectedOptions.first().value
-        val modal = Modal.create("create_reservation_modal:$spaceId", "예약 정보 입력")
+        val modal = Modal.create("${DiscordConstants.RESERVATION_CREATE_MODAL}:$spaceId", "예약 정보 입력")
             .addActionRow(TextInput.create("user_name", "예약자명", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(TextInput.create("date", "예약 날짜 (YYYY-MM-DD)", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(TextInput.create("time_range", "예약 시간 (HH:mm~HH:mm)", TextInputStyle.SHORT).setRequired(true).build())
@@ -48,7 +49,7 @@ class ReservationCreationHandler(
         event.replyModal(modal).queue()
     }
 
-    fun handleReservationModal(event: ModalInteractionEvent) {
+    fun handleCreateModal(event: ModalInteractionEvent) {
         val spaceId = event.modalId.split(":")[1].toLong()
         val bookerName = event.getValue("user_name")!!.asString
         val dateStr = event.getValue("date")!!.asString
