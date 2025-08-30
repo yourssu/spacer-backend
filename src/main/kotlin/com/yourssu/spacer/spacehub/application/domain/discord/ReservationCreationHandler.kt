@@ -1,62 +1,33 @@
 package com.yourssu.spacer.spacehub.application.domain.discord
 
-import com.yourssu.spacer.spacehub.business.domain.discord.DiscordService
 import com.yourssu.spacer.spacehub.business.domain.reservation.CreateReservationCommand
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
-import com.yourssu.spacer.spacehub.business.domain.space.SpaceService
 import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservationException
 import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.business.support.exception.ReservationConflictException
-import com.yourssu.spacer.spacehub.implement.support.exception.DiscordServerLinkNotFoundException
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Component
-class ReservationHandler(
-    private val discordService: DiscordService,
-    private val spaceService: SpaceService,
-    private val reservationService: ReservationService
+class ReservationCreationHandler(
+    private val reservationService: ReservationService,
+    private val uiFactory: DiscordUIFactory
 ) {
 
     fun handleSlashCommand(event: SlashCommandInteractionEvent) {
-        val discordServerId = event.guild?.id ?: run {
-            event.reply("❌ 서버 정보가 없습니다.").setEphemeral(true).queue()
-            return
-        }
+        val organizationId = uiFactory.getVerifiedOrganizationId(event) ?: return
 
-        val organizationId = try {
-            discordService.getOrganizationIdByDiscordServerId(discordServerId)
-        } catch (e: DiscordServerLinkNotFoundException) {
-            event.reply("❌ 서버가 단체와 연동되지 않았습니다. `/서버등록` 후 사용해주세요.")
-                .setEphemeral(true).queue()
-            return
-        } catch (e: Exception) {
-            event.reply("❌ 알 수 없는 오류가 발생했습니다. 관리자에게 문의해주세요.")
-                .setEphemeral(true).queue()
-            return
-        }
-
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        val spaces = spaceService.readAllByOrganizationId(organizationId).spaceDtos
-        val selectMenu = StringSelectMenu.create("space_select")
-            .setPlaceholder("예약할 공간 선택")
-            .setRequiredRange(1, 1)
-            .addOptions(
-                spaces.map { space ->
-                    val timeRange = "(${space.openingTime.format(formatter)} ~ ${space.closingTime.format(formatter)})"
-                    SelectOption.of("${space.name} $timeRange", space.id.toString())
-                }
-            )
-            .build()
+        val selectMenu = uiFactory.createSpaceSelectMenu(
+            componentId = "space_select_create",
+            placeholder = "예약할 공간 선택",
+            organizationId = organizationId
+        )
 
         event.reply("예약할 공간을 선택하세요")
             .addActionRow(selectMenu)
@@ -65,10 +36,8 @@ class ReservationHandler(
     }
 
     fun handleSelectMenu(event: StringSelectInteractionEvent) {
-        if (event.componentId != "space_select") return
-
         val spaceId = event.selectedOptions.first().value
-        val modal = Modal.create("reservation_modal:$spaceId", "예약 정보 입력")
+        val modal = Modal.create("create_reservation_modal:$spaceId", "예약 정보 입력")
             .addActionRow(TextInput.create("user_name", "예약자명", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(TextInput.create("date", "예약 날짜 (YYYY-MM-DD)", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(TextInput.create("time_range", "예약 시간 (HH:mm~HH:mm)", TextInputStyle.SHORT).setRequired(true).build())

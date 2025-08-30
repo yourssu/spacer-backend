@@ -9,26 +9,33 @@ import org.springframework.stereotype.Component
 @Component
 class DiscordCommandListener(
     private val serverRegistrationHandler: ServerRegistrationHandler,
-    private val reservationHandler: ReservationHandler
+    private val reservationCreationHandler: ReservationCreationHandler,
+    private val reservationReadHandler: ReservationReadHandler
 ) : ListenerAdapter() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         when (event.name) {
             "서버등록" -> serverRegistrationHandler.handleSlashCommand(event)
-            "예약하기" -> reservationHandler.handleSlashCommand(event)
+            "동방예약" -> reservationCreationHandler.handleSlashCommand(event)
+            "예약조회" -> reservationReadHandler.handleSlashCommand(event)
         }
     }
 
     override fun onStringSelectInteraction(event: StringSelectInteractionEvent) {
-        reservationHandler.handleSelectMenu(event)
+        when {
+            event.componentId.startsWith("space_select_create") -> reservationCreationHandler.handleSelectMenu(event)
+            event.componentId.startsWith("space_select_read") -> reservationReadHandler.handleSelectMenu(event)
+        }
     }
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
         when {
-            event.modalId.startsWith("reservation_modal") ->
-                reservationHandler.handleReservationModal(event)
             event.modalId.startsWith("create_org_modal") ->
                 serverRegistrationHandler.handleOrgRegistrationModal(event)
+            event.modalId.startsWith("create_reservation_modal") ->
+                reservationCreationHandler.handleReservationModal(event)
+            event.modalId.startsWith("read_reservation_modal") ->
+                reservationReadHandler.handleReadModal(event)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.yourssu.spacer.spacehub.implement.support.configuration
+package com.yourssu.spacer.spacehub.application.support.configuration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
