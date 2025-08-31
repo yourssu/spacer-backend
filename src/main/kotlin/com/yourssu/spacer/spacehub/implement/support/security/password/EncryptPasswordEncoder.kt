@@ -1,5 +1,6 @@
 package com.yourssu.spacer.spacehub.implement.support.security.password
 
+import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.business.support.security.password.PasswordEncoder
 import com.yourssu.spacer.spacehub.implement.support.exception.PasswordEncodingFailureException
 import java.security.MessageDigest
@@ -76,7 +77,13 @@ class EncryptPasswordEncoder : PasswordEncoder {
         return String.format("%s$%02d$%s%s", VERSION_PREFIX, STRENGTH, encodedSalt, encodedHashValue)
     }
 
-    override fun matches(rawPassword: String, encodedPassword: String): Boolean {
+    override fun matchesOrThrow(rawPassword: String, encodedPassword: String, message: String) {
+        if (!matches(rawPassword, encodedPassword)) {
+            throw PasswordNotMatchException(message)
+        }
+    }
+
+    private fun matches(rawPassword: String, encodedPassword: String): Boolean {
         if (EncryptPasswordValidator.isNotEncrypted(encodedPassword)) {
             return false
         }

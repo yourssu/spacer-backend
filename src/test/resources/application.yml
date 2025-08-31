@@ -30,3 +30,8 @@ token:
     refresh-key: dummy-refresh-key
     access-expired-hours: 1
     refresh-expired-hours: 336
+
+
+discord:
+  bot:
+    token: dummy-token

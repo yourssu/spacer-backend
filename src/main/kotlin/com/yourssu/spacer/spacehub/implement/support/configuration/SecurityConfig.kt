@@ -6,4 +6,4 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @EnableConfigurationProperties(JwtProperties::class)
-class PropertiesConfiguration
+class SecurityConfig
