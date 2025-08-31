@@ -11,4 +11,7 @@ object DiscordConstants {
 
     const val RESERVATION_DELETE_RESERVATION_SELECT = "reservation_delete_reservation_select"
     const val RESERVATION_DELETE_MODAL = "reservation_delete_modal"
+
+    const val RECURRING_RESERVATION_CREATE_SPACE_SELECT = "recurring_reservation_create_space_select"
+    const val RECURRING_RESERVATION_CREATE_MODAL = "recurring_reservation_create_modal"
 }

@@ -1,6 +1,5 @@
 package com.yourssu.spacer.spacehub.business.domain.reservation
 
-import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.implement.support.security.password.PasswordFormat
 import com.yourssu.spacer.spacehub.implement.support.security.password.PasswordValidator
 import com.yourssu.spacer.spacehub.implement.domain.space.Space
@@ -15,6 +14,7 @@ import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationWrite
 import java.time.LocalDate
 import java.time.LocalDateTime
 import org.springframework.stereotype.Service
+import java.time.temporal.TemporalAdjusters
 
 @Service
 class ReservationService(
@@ -50,6 +50,48 @@ class ReservationService(
         val savedReservation: Reservation = reservationWriter.write(reservation)
 
         return savedReservation.id!!
+    }
+
+    fun createRecurring(command: CreateRecurringReservationCommand): List<LocalDate> {
+        val space: Space = spaceReader.getById(command.spaceId)
+        passwordEncoder.matchesOrThrow(command.password, space.getEncryptedReservationPassword(), "예약 비밀번호가 일치하지 않습니다.")
+        PasswordValidator.validate(PasswordFormat.PERSONAL_RESERVATION_PASSWORD, command.rawPersonalPassword)
+        val encryptedPersonalPassword: String = passwordEncoder.encode(command.rawPersonalPassword)
+
+        // ---
+        val representativeReservationTime = ReservationTime(
+            LocalDateTime.of(command.startDate, command.startTime),
+            LocalDateTime.of(command.startDate, command.endTime)
+        )
+        if (!space.canReserve(representativeReservationTime)) {
+            throw InvalidReservationException("공간 사용 가능 시간이 아닙니다.")
+        }
+        // ---
+
+        val createdDates = mutableListOf<LocalDate>()
+        val firstOccurrence = command.startDate.with(TemporalAdjusters.nextOrSame(command.dayOfWeek))
+        var currentDate = firstOccurrence
+
+        while (!currentDate.isAfter(command.endDate)) {
+            val reservation = Reservation(
+                space = space,
+                bookerName = command.bookerName,
+                reservationTime = ReservationTime(
+                    LocalDateTime.of(currentDate, command.startTime),
+                    LocalDateTime.of(currentDate, command.endTime)
+                ),
+                encryptedPersonalPassword = encryptedPersonalPassword,
+            )
+
+            if (reservationReader.isTimeConflict(reservation)) {
+                throw ReservationConflictException("이미 예약이 있는 날짜(${currentDate})가 포함되어 있습니다.")
+            }
+
+            reservationWriter.write(reservation)
+            createdDates.add(currentDate)
+            currentDate = currentDate.plusWeeks(1)
+        }
+        return createdDates
     }
 
     fun readAllByDate(spaceId: Long, date: LocalDate): ReadReservationsResult {

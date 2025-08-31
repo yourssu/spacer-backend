@@ -12,7 +12,8 @@ class DiscordCommandListener(
     private val createServerLinkHandler: CreateServerLinkHandler,
     private val createReservationHandler: CreateReservationHandler,
     private val readReservationHandler: ReadReservationHandler,
-    private val deleteReservationHandler: DeleteReservationHandler
+    private val deleteReservationHandler: DeleteReservationHandler,
+    private val createRecurringReservationHandler: CreateRecurringReservationHandler
 ) : ListenerAdapter() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
@@ -20,6 +21,7 @@ class DiscordCommandListener(
             "서버등록" -> createServerLinkHandler.handleSlashCommand(event)
             "동방예약" -> createReservationHandler.handleSlashCommand(event)
             "예약조회" -> readReservationHandler.handleSlashCommand(event)
+            "정기회의" -> createRecurringReservationHandler.handleSlashCommand(event)
         }
     }
 
@@ -31,6 +33,8 @@ class DiscordCommandListener(
                 readReservationHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT) ->
                 deleteReservationHandler.handleSelectMenu(event)
+            event.componentId.startsWith(DiscordConstants.RECURRING_RESERVATION_CREATE_SPACE_SELECT) ->
+                createRecurringReservationHandler.handleSelectMenu(event)
         }
     }
 
@@ -44,6 +48,8 @@ class DiscordCommandListener(
                 readReservationHandler.handleReadModal(event)
             event.modalId.startsWith(DiscordConstants.RESERVATION_DELETE_MODAL) ->
                 deleteReservationHandler.handleDeleteModal(event)
+            event.modalId.startsWith(DiscordConstants.RECURRING_RESERVATION_CREATE_MODAL) ->
+                createRecurringReservationHandler.handleCreateModal(event)
         }
     }
 }
