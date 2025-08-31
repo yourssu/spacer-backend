@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -22,6 +23,7 @@ class CreateReservationHandler(
     private val uiFactory: DiscordUIFactory,
     private val inputParser: DiscordInputParser
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     fun handleSlashCommand(event: SlashCommandInteractionEvent) {
         val organizationId = uiFactory.getVerifiedOrganizationId(event) ?: return
@@ -76,6 +78,7 @@ class CreateReservationHandler(
             event.replyError("예약 실패: 공간 사용 가능 시간이 아닙니다.")
         } catch (e: Exception) {
             event.replyError("알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
+            log.error("Unknown exception: ", e)
         }
     }
 

@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.format.TextStyle
 import java.util.*
@@ -24,6 +25,7 @@ class CreateRecurringReservationHandler(
     private val uiFactory: DiscordUIFactory,
     private val inputParser: DiscordInputParser
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     fun handleSlashCommand(event: SlashCommandInteractionEvent) {
         val organizationId = uiFactory.getVerifiedOrganizationId(event) ?: return
@@ -104,6 +106,7 @@ class CreateRecurringReservationHandler(
             event.hook.sendError("**정기 예약 실패**: ${e.message}")
         } catch (e: Exception) {
             event.hook.sendError("**정기 예약 실패**: 알 수 없는 오류로 정기 예약에 실패했습니다. 관리자에게 문의하세요.")
+            log.error("Unknown exception: ", e)
         }
     }
 

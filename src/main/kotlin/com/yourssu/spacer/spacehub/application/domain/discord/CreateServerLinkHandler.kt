@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -20,6 +21,8 @@ class CreateServerLinkHandler(
     private val discordService: DiscordService,
     private val authenticationService: AuthenticationService
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     fun handleSlashCommand(event: SlashCommandInteractionEvent) {
         val discordServerId = event.guild!!.id
         try {
@@ -57,6 +60,7 @@ class CreateServerLinkHandler(
             event.replyError("**비밀번호 불일치**: 비밀번호가 올바르지 않습니다.")
         } catch (e: Exception) {
             event.replyError("알 수 없는 오류가 발생했습니다: ${e.message}")
+            log.error("Unknown exception: ", e)
         }
     }
 }

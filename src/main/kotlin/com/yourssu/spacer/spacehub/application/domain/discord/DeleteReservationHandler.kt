@@ -8,12 +8,14 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
 class DeleteReservationHandler(
     private val reservationService: ReservationService
 ){
+    private val log = LoggerFactory.getLogger(javaClass)
 
     fun handleSelectMenu(event: StringSelectInteractionEvent) {
         val reservationId = event.selectedOptions.first().value
@@ -40,6 +42,7 @@ class DeleteReservationHandler(
             event.replyError("비밀번호가 일치하지 않습니다.")
         } catch (e: Exception) {
             event.replyError("알 수 없는 오류로 예약 취소에 실패했습니다.")
+            log.error("Unknown exception: ", e)
         }
     }
 }

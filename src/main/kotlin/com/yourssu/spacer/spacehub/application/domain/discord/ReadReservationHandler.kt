@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.awt.Color
 import java.time.LocalDate
@@ -25,6 +26,7 @@ class ReadReservationHandler(
     private val reservationService: ReservationService,
     private val inputParser: DiscordInputParser
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
 
     fun handleSlashCommand(event: SlashCommandInteractionEvent) {
         val organizationId = uiFactory.getVerifiedOrganizationId(event) ?: return
@@ -102,6 +104,7 @@ class ReadReservationHandler(
             event.replyError("입력 오류: ${e.message}")
         } catch (e: Exception) {
             event.replyError("알 수 없는 오류가 발생하여 조회에 실패했습니다.")
+            log.error("Unknown exception: ", e)
         }
     }
 }
