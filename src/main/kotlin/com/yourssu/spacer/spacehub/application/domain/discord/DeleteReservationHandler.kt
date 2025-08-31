@@ -35,11 +35,11 @@ class DeleteReservationHandler(
 
         try {
             reservationService.delete(reservationId, password)
-            event.reply("✅ 예약이 정상적으로 취소되었습니다.").setEphemeral(true).queue()
+            event.replySuccess("예약이 정상적으로 취소되었습니다.")
         } catch (e: PasswordNotMatchException) {
-            event.reply("❌ 비밀번호가 일치하지 않습니다.").setEphemeral(true).queue()
+            event.replyError("비밀번호가 일치하지 않습니다.")
         } catch (e: Exception) {
-            event.reply("❌ 알 수 없는 오류로 예약 취소에 실패했습니다.").setEphemeral(true).queue()
+            event.replyError("알 수 없는 오류로 예약 취소에 실패했습니다.")
         }
     }
 }

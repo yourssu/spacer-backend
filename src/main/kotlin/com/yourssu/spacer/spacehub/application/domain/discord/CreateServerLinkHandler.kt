@@ -50,19 +50,13 @@ class CreateServerLinkHandler(
         try {
             val organizationId = authenticationService.login(loginCommand).id
             discordService.createServerLink(discordServerId, organizationId)
-
-            event.reply("✅ 디스코드 서버가 SPACER와 연동되었습니다!")
-                .setEphemeral(true).queue()
-
+            event.replySuccess("디스코드 서버가 SPACER와 연동되었습니다!")
         } catch (e: OrganizationNotFoundException) {
-            event.reply("❌ **가입 이력 없음**: 해당 이메일로 가입된 단체를 찾을 수 없습니다.")
-                .setEphemeral(true).queue()
+            event.replyError("**가입 이력 없음**: 해당 이메일로 가입된 단체를 찾을 수 없습니다.")
         } catch (e: PasswordNotMatchException) {
-            event.reply("❌ **비밀번호 불일치**: 비밀번호가 올바르지 않습니다.")
-                .setEphemeral(true).queue()
+            event.replyError("**비밀번호 불일치**: 비밀번호가 올바르지 않습니다.")
         } catch (e: Exception) {
-            event.reply("❌ 알 수 없는 오류가 발생했습니다: ${e.message}")
-                .setEphemeral(true).queue()
+            event.replyError("알 수 없는 오류가 발생했습니다: ${e.message}")
         }
     }
 }

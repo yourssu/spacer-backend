@@ -1,6 +1,7 @@
 package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
+import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
 import com.yourssu.spacer.spacehub.business.domain.space.SpaceService
 import net.dv8tion.jda.api.EmbedBuilder
@@ -16,13 +17,13 @@ import org.springframework.stereotype.Component
 import java.awt.Color
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 @Component
 class ReadReservationHandler(
     private val uiFactory: DiscordUIFactory,
     private val spaceService: SpaceService,
-    private val reservationService: ReservationService
+    private val reservationService: ReservationService,
+    private val inputParser: DiscordInputParser
 ) {
 
     fun handleSlashCommand(event: SlashCommandInteractionEvent) {
@@ -55,48 +56,52 @@ class ReadReservationHandler(
     }
 
     fun handleReadModal(event: ModalInteractionEvent) {
-        val spaceId = event.modalId.split(":")[1].toLong()
-        val dateStr = event.getValue("date")!!.asString
-        val date = try {
-            LocalDate.parse(dateStr)
-        } catch (e: DateTimeParseException) {
-            event.reply("❌ 날짜 형식이 올바르지 않습니다. 'YYYY-MM-DD' 형식으로 입력해주세요.").setEphemeral(true).queue()
-            return
-        }
-        val result = reservationService.readAllByDate(spaceId, date)
-        val space = spaceService.readById(spaceId)
-        val embed = EmbedBuilder()
-            .setTitle("📅 ${space.name} 예약 현황")
-            .setDescription("**${date}** 의 예약 목록입니다.")
-            .setColor(Color.CYAN)
+        try {
+            val spaceId = event.modalId.split(":")[1].toLong()
+            val dateStr = event.getValue("date")!!.asString
+            val date = inputParser.parseDate(dateStr)
 
-        if (result.reservationDtos.isEmpty()) {
-            embed.addField("결과 없음", "해당 날짜에 예약이 없습니다.", false)
-            event.replyEmbeds(embed.build())
-                .setEphemeral(true)
-                .queue()
-        } else {
-            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-            result.reservationDtos.sortedBy { it.startDateTime }.forEach { reservation ->
-                val title = "${reservation.startDateTime.format(timeFormatter)} ~ ${reservation.endDateTime.format(timeFormatter)}"
-                val booker = "예약자: ${reservation.bookerName}"
-                embed.addField(title, booker, false)
+            val result = reservationService.readAllByDate(spaceId, date)
+            val space = spaceService.readById(spaceId)
+            val embed = EmbedBuilder()
+                .setTitle("📅 ${space.name} 예약 현황")
+                .setDescription("**${date}** 의 예약 목록입니다.")
+                .setColor(Color.CYAN)
+
+            if (result.reservationDtos.isEmpty()) {
+                embed.addField("결과 없음", "해당 날짜에 예약이 없습니다.", false)
+                event.replyEmbeds(embed.build())
+                    .setEphemeral(true)
+                    .queue()
+            } else {
+                val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+                result.reservationDtos.sortedBy { it.startDateTime }.forEach { reservation ->
+                    val title =
+                        "${reservation.startDateTime.format(timeFormatter)} ~ ${reservation.endDateTime.format(timeFormatter)}"
+                    val booker = "예약자: ${reservation.bookerName}"
+                    embed.addField(title, booker, false)
+                }
+
+                val selectMenu = StringSelectMenu.create(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT)
+                    .setPlaceholder("취소할 예약을 선택하세요")
+                    .addOptions(
+                        result.reservationDtos.sortedBy { it.startDateTime }.map {
+                            val label =
+                                "${it.startDateTime.format(timeFormatter)}~${it.endDateTime.format(timeFormatter)} (${it.bookerName})"
+                            SelectOption.of(label, it.id.toString())
+                        }
+                    )
+                    .build()
+
+                event.replyEmbeds(embed.build())
+                    .addActionRow(selectMenu)
+                    .setEphemeral(true)
+                    .queue()
             }
-
-            val selectMenu = StringSelectMenu.create(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT)
-                .setPlaceholder("취소할 예약을 선택하세요")
-                .addOptions(
-                    result.reservationDtos.sortedBy { it.startDateTime }.map {
-                        val label = "${it.startDateTime.format(timeFormatter)}~${it.endDateTime.format(timeFormatter)} (${it.bookerName})"
-                        SelectOption.of(label, it.id.toString())
-                    }
-                )
-                .build()
-
-            event.replyEmbeds(embed.build())
-                .addActionRow(selectMenu)
-                .setEphemeral(true)
-                .queue()
+        } catch (e: InputParseException) {
+            event.replyError("입력 오류: ${e.message}")
+        } catch (e: Exception) {
+            event.replyError("알 수 없는 오류가 발생하여 조회에 실패했습니다.")
         }
     }
 }
