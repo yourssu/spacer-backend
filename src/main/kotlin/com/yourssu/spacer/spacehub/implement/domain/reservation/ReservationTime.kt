@@ -1,7 +1,9 @@
 package com.yourssu.spacer.spacehub.implement.domain.reservation
 
 import com.yourssu.spacer.spacehub.implement.support.exception.InvalidReservationTimeException
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 class ReservationTime(
     val startDateTime: LocalDateTime,
@@ -17,6 +19,14 @@ class ReservationTime(
         }
         if (startDateTime.plusDays(1L) <= endDateTime) {
             throw InvalidReservationTimeException("하루(24시간) 이상의 예약은 불가능합니다.")
+        }
+    }
+
+    companion object {
+        fun of(date: LocalDate, startTime: LocalTime, endTime: LocalTime): ReservationTime {
+            val startDateTime = LocalDateTime.of(date, startTime)
+            val endDateTime = LocalDateTime.of(date, endTime)
+            return ReservationTime(startDateTime, endDateTime)
         }
     }
 }

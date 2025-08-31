@@ -69,8 +69,12 @@ class ReadReservationHandler(
             .setTitle("📅 ${space.name} 예약 현황")
             .setDescription("**${date}** 의 예약 목록입니다.")
             .setColor(Color.CYAN)
+
         if (result.reservationDtos.isEmpty()) {
             embed.addField("결과 없음", "해당 날짜에 예약이 없습니다.", false)
+            event.replyEmbeds(embed.build())
+                .setEphemeral(true)
+                .queue()
         } else {
             val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
             result.reservationDtos.sortedBy { it.startDateTime }.forEach { reservation ->
