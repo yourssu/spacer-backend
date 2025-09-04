@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.storage.domain.reservation
 
 import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
 import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationTime
+import com.yourssu.spacer.spacehub.storage.domain.meeting.RegularMeetingEntity
 import com.yourssu.spacer.spacehub.storage.domain.space.SpaceEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -13,6 +14,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDateTime
 
 @Entity
@@ -23,9 +26,14 @@ class ReservationEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id", nullable = false, foreignKey = ForeignKey(name = "fk_reservation_space"))
     val space: SpaceEntity,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "regular_meeting_id", nullable = true)
+    val regularMeeting: RegularMeetingEntity? = null,
 
     @Column(nullable = false)
     val bookerName: String,
@@ -44,6 +52,7 @@ class ReservationEntity(
         fun from(reservation: Reservation) = ReservationEntity(
             id = reservation.id,
             space = SpaceEntity.from(reservation.space),
+            regularMeeting = reservation.regularMeeting?.let { RegularMeetingEntity.from(it) },
             bookerName = reservation.bookerName,
             startDateTime = reservation.getStartDateTime(),
             endDateTime = reservation.getEndDateTime(),
@@ -55,6 +64,7 @@ class ReservationEntity(
         id = id,
         space = space.toDomain(),
         bookerName = bookerName,
+        regularMeeting = regularMeeting?.toDomain(),
         reservationTime = ReservationTime(startDateTime, endDateTime),
         encryptedPersonalPassword = encryptedPersonalPassword,
     )

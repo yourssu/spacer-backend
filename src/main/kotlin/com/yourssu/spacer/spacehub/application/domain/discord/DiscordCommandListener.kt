@@ -13,7 +13,9 @@ class DiscordCommandListener(
     private val createReservationHandler: CreateReservationHandler,
     private val readReservationHandler: ReadReservationHandler,
     private val deleteReservationHandler: DeleteReservationHandler,
-    private val createRecurringReservationHandler: CreateRecurringReservationHandler
+    private val createRegularMeetingHandler: CreateRegularMeetingHandler,
+    private val readRegularMeetingHandler: ReadRegularMeetingHandler,
+    private val deleteRegularMeetingHandler: DeleteRegularMeetingHandler
 ) : ListenerAdapter() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
@@ -21,7 +23,8 @@ class DiscordCommandListener(
             "서버등록" -> createServerLinkHandler.handleSlashCommand(event)
             "동방예약" -> createReservationHandler.handleSlashCommand(event)
             "예약조회" -> readReservationHandler.handleSlashCommand(event)
-            "정기회의" -> createRecurringReservationHandler.handleSlashCommand(event)
+            "정기회의등록" -> createRegularMeetingHandler.handleSlashCommand(event)
+            "정기회의조회" -> readRegularMeetingHandler.handleSlashCommand(event)
         }
     }
 
@@ -31,10 +34,14 @@ class DiscordCommandListener(
                 createReservationHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.RESERVATION_READ_SPACE_SELECT) ->
                 readReservationHandler.handleSelectMenu(event)
-            event.componentId.startsWith(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT) ->
+            event.componentId.startsWith(DiscordConstants.RESERVATION_DELETE_SPACE_SELECT) ->
                 deleteReservationHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.RECURRING_RESERVATION_CREATE_SPACE_SELECT) ->
-                createRecurringReservationHandler.handleSelectMenu(event)
+                createRegularMeetingHandler.handleSelectMenu(event)
+            event.componentId.startsWith(DiscordConstants.REGULAR_MEETING_READ_SPACE_SELECT) ->
+                readRegularMeetingHandler.handleSelectMenu(event)
+            event.componentId.startsWith(DiscordConstants.REGULAR_MEETING_DELETE_SPACE_SELECT) ->
+                deleteRegularMeetingHandler.handleSelectMenu(event)
         }
     }
 
@@ -49,7 +56,9 @@ class DiscordCommandListener(
             event.modalId.startsWith(DiscordConstants.RESERVATION_DELETE_MODAL) ->
                 deleteReservationHandler.handleDeleteModal(event)
             event.modalId.startsWith(DiscordConstants.RECURRING_RESERVATION_CREATE_MODAL) ->
-                createRecurringReservationHandler.handleCreateModal(event)
+                createRegularMeetingHandler.handleCreateModal(event)
+            event.modalId.startsWith(DiscordConstants.REGULAR_MEETING_DELETE_MODAL) ->
+                deleteRegularMeetingHandler.handleDeleteModal(event)
         }
     }
 }

@@ -17,7 +17,7 @@ class RecurringReservationCreator(
 
         while (!currentDate.isAfter(param.endDate)) {
             val reservationTime = ReservationTime.of(currentDate, param.startTime, param.endTime)
-            val reservation = reservationMapper.toReservation(param.space, param.bookerName, reservationTime, param.encryptedPersonalPassword)
+            val reservation = reservationMapper.toReservation(param.space, param.regularMeeting, param.bookerName, reservationTime, param.encryptedPersonalPassword)
             reservationValidator.validateConflict(reservation)
 
             reservationWriter.write(reservation)
