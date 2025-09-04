@@ -1,12 +1,12 @@
-package com.yourssu.spacer.spacehub.business.domain.reservation
+package com.yourssu.spacer.spacehub.business.domain.meeting
 
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 
-data class CreateRecurringReservationCommand(
+data class CreateRegularMeetingCommand(
     val spaceId: Long,
-    val bookerName: String,
+    val teamName: String,
     val password: String,
     val rawPersonalPassword: String,
     val dayOfWeek: DayOfWeek,

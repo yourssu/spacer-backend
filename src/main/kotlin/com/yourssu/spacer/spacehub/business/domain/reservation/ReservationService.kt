@@ -5,8 +5,6 @@ import com.yourssu.spacer.spacehub.implement.support.security.password.PasswordV
 import com.yourssu.spacer.spacehub.implement.domain.space.Space
 import com.yourssu.spacer.spacehub.implement.domain.space.SpaceReader
 import com.yourssu.spacer.spacehub.business.support.security.password.PasswordEncoder
-import com.yourssu.spacer.spacehub.implement.domain.reservation.RecurringReservationCreator
-import com.yourssu.spacer.spacehub.implement.domain.reservation.RecurringReservationParam
 import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
 import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationMapper
 import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationReader
@@ -24,8 +22,7 @@ class ReservationService(
     private val reservationValidator: ReservationValidator,
     private val reservationMapper: ReservationMapper,
     private val reservationWriter: ReservationWriter,
-    private val reservationReader: ReservationReader,
-    private val recurringReservationCreator: RecurringReservationCreator
+    private val reservationReader: ReservationReader
 ) {
 
     fun create(command: CreateReservationCommand): Long {
@@ -41,19 +38,6 @@ class ReservationService(
 
         val savedReservation: Reservation = reservationWriter.write(reservation)
         return savedReservation.id!!
-    }
-
-    fun createRecurring(command: CreateRecurringReservationCommand): List<LocalDate> {
-        val space: Space = spaceReader.getById(command.spaceId)
-
-        passwordEncoder.matchesOrThrow(command.password, space.getEncryptedReservationPassword(), "예약 비밀번호가 일치하지 않습니다.")
-        PasswordValidator.validate(PasswordFormat.PERSONAL_RESERVATION_PASSWORD, command.rawPersonalPassword)
-        val encryptedPersonalPassword: String = passwordEncoder.encode(command.rawPersonalPassword)
-
-        val representativeReservationTime = ReservationTime.of(command.startDate, command.startTime, command.endTime)
-        reservationValidator.validateTime(space, representativeReservationTime)
-        val param = RecurringReservationParam.of(space, command, encryptedPersonalPassword)
-        return recurringReservationCreator.create(param)
     }
 
     fun readAllByDate(spaceId: Long, date: LocalDate): ReadReservationsResult {

@@ -1,6 +1,7 @@
 package com.yourssu.spacer.spacehub.implement.domain.reservation
 
-import com.yourssu.spacer.spacehub.business.domain.reservation.CreateRecurringReservationCommand
+import com.yourssu.spacer.spacehub.business.domain.meeting.CreateRegularMeetingCommand
+import com.yourssu.spacer.spacehub.implement.domain.meeting.RegularMeeting
 import com.yourssu.spacer.spacehub.implement.domain.space.Space
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -8,6 +9,7 @@ import java.time.LocalTime
 
 data class RecurringReservationParam (
     val space: Space,
+    val regularMeeting: RegularMeeting,
     val bookerName: String,
     val encryptedPersonalPassword: String,
     val dayOfWeek: DayOfWeek,
@@ -19,12 +21,14 @@ data class RecurringReservationParam (
     companion object {
         fun of(
             space: Space,
-            command: CreateRecurringReservationCommand,
+            regularMeeting: RegularMeeting,
+            command: CreateRegularMeetingCommand,
             encryptedPersonalPassword: String
         ): RecurringReservationParam {
             return RecurringReservationParam(
                 space = space,
-                bookerName = command.bookerName,
+                regularMeeting = regularMeeting,
+                bookerName = command.teamName,
                 encryptedPersonalPassword = encryptedPersonalPassword,
                 dayOfWeek = command.dayOfWeek,
                 startTime = command.startTime,

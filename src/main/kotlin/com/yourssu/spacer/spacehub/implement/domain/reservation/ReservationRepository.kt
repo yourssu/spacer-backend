@@ -1,6 +1,5 @@
 package com.yourssu.spacer.spacehub.implement.domain.reservation
 
-import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
 import java.time.LocalDateTime
 
 interface ReservationRepository {

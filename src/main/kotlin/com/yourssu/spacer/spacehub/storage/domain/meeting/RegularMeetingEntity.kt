@@ -20,9 +20,6 @@ class RegularMeetingEntity(
     val space: SpaceEntity,
 
     @Column(nullable = false)
-    val organizerName: String,
-
-    @Column(nullable = false)
     val teamName: String,
 
     @Column(nullable = false)
@@ -45,7 +42,6 @@ class RegularMeetingEntity(
         fun from(regularMeeting: RegularMeeting) = RegularMeetingEntity(
             id = regularMeeting.id,
             space = SpaceEntity.from(regularMeeting.space),
-            organizerName = regularMeeting.organizerName,
             teamName = regularMeeting.teamName,
             startDate = regularMeeting.startDate,
             endDate = regularMeeting.endDate,
@@ -58,7 +54,6 @@ class RegularMeetingEntity(
     fun toDomain() = RegularMeeting(
         id = id,
         space = space.toDomain(),
-        organizerName = organizerName,
         teamName = teamName,
         startDate = startDate,
         endDate = endDate,

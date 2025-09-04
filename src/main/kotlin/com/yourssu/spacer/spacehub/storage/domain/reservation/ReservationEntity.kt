@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.storage.domain.reservation
 
 import com.yourssu.spacer.spacehub.implement.domain.reservation.Reservation
 import com.yourssu.spacer.spacehub.implement.domain.reservation.ReservationTime
+import com.yourssu.spacer.spacehub.storage.domain.meeting.RegularMeetingEntity
 import com.yourssu.spacer.spacehub.storage.domain.space.SpaceEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -27,6 +28,10 @@ class ReservationEntity(
     @JoinColumn(name = "space_id", nullable = false, foreignKey = ForeignKey(name = "fk_reservation_space"))
     val space: SpaceEntity,
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "regular_meeting_id", nullable = true)
+    val regularMeeting: RegularMeetingEntity? = null,
+
     @Column(nullable = false)
     val bookerName: String,
 
@@ -44,6 +49,7 @@ class ReservationEntity(
         fun from(reservation: Reservation) = ReservationEntity(
             id = reservation.id,
             space = SpaceEntity.from(reservation.space),
+            regularMeeting = reservation.regularMeeting?.let { RegularMeetingEntity.from(it) },
             bookerName = reservation.bookerName,
             startDateTime = reservation.getStartDateTime(),
             endDateTime = reservation.getEndDateTime(),
@@ -55,6 +61,7 @@ class ReservationEntity(
         id = id,
         space = space.toDomain(),
         bookerName = bookerName,
+        regularMeeting = regularMeeting?.toDomain(),
         reservationTime = ReservationTime(startDateTime, endDateTime),
         encryptedPersonalPassword = encryptedPersonalPassword,
     )

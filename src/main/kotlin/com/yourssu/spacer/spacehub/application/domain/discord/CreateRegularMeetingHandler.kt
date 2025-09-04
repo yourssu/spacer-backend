@@ -2,8 +2,8 @@ package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
-import com.yourssu.spacer.spacehub.business.domain.reservation.CreateRecurringReservationCommand
-import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
+import com.yourssu.spacer.spacehub.business.domain.meeting.CreateRegularMeetingCommand
+import com.yourssu.spacer.spacehub.business.domain.meeting.RegularMeetingService
 import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservationException
 import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.business.support.exception.ReservationConflictException
@@ -20,8 +20,8 @@ import java.time.format.TextStyle
 import java.util.*
 
 @Component
-class CreateRecurringReservationHandler(
-    private val reservationService: ReservationService,
+class CreateRegularMeetingHandler(
+    private val regularMeetingService: RegularMeetingService,
     private val uiFactory: DiscordUIFactory,
     private val inputParser: DiscordInputParser
 ) {
@@ -46,7 +46,7 @@ class CreateRecurringReservationHandler(
         val spaceId = event.selectedOptions.first().value
 
         val modal = Modal.create("${DiscordConstants.RECURRING_RESERVATION_CREATE_MODAL}:$spaceId", "정기 회의 정보 입력")
-            .addActionRow(TextInput.create("user_name", "예약자명", TextInputStyle.SHORT).setRequired(true).build())
+            .addActionRow(TextInput.create("team_name", "팀 이름", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(
                 TextInput.create("day_of_week", "요일 (월, 화, 수...)", TextInputStyle.SHORT)
                     .setPlaceholder("월")
@@ -81,13 +81,13 @@ class CreateRecurringReservationHandler(
 
         try {
             val command = createCommandFromModal(event)
-            val createdDates = reservationService.createRecurring(command)
+            val createdDates = regularMeetingService.createRegularMeeting(command)
 
             val successMessage = """
                 **정기 회의 예약 완료**
                 총 **${createdDates.size}건**의 예약이 모두 성공적으로 생성되었습니다.
                 
-                **예약자**: ${command.bookerName}
+                **팀명**: ${command.teamName}
                 **기간**: ${command.startDate} ~ ${command.endDate}
                 **요일**: ${command.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)}
                 **시간**: ${command.startTime}~${command.endTime}
@@ -110,7 +110,7 @@ class CreateRecurringReservationHandler(
         }
     }
 
-    private fun createCommandFromModal(event: ModalInteractionEvent): CreateRecurringReservationCommand {
+    private fun createCommandFromModal(event: ModalInteractionEvent): CreateRegularMeetingCommand {
         val dayOfWeekStr = event.getValue("day_of_week")!!.asString
         val timeRangeStr = event.getValue("time_range")!!.asString
         val dateRangeStr = event.getValue("date_range")!!.asString
@@ -121,9 +121,9 @@ class CreateRecurringReservationHandler(
         val (startDate, endDate) = inputParser.parseDateRange(dateRangeStr)
         val (spacePassword, personalPassword) = inputParser.parsePasswords(passwordsStr)
 
-        return CreateRecurringReservationCommand(
+        return CreateRegularMeetingCommand(
             spaceId = event.modalId.split(":")[1].toLong(),
-            bookerName = event.getValue("user_name")!!.asString,
+            teamName = event.getValue("team_name")!!.asString,
             password = spacePassword,
             rawPersonalPassword = personalPassword,
             dayOfWeek = dayOfWeek,

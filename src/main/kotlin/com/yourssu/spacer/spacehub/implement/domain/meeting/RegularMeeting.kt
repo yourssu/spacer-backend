@@ -10,7 +10,6 @@ import java.time.LocalTime
 class RegularMeeting(
     val id: Long? = null,
     val space: Space,
-    val organizerName: String,
     val teamName: String,
     val startDate: LocalDate,
     val endDate: LocalDate,
@@ -25,10 +24,6 @@ class RegularMeeting(
 
         if (startTime >= endTime) {
             throw InvalidReservationTimeException("회의 시작 시간이 종료 시간보다 늦거나 같습니다.")
-        }
-
-        if (startTime.plusHours(24) <= endTime) {
-            throw InvalidReservationTimeException("하루(24시간) 이상의 회의는 등록할 수 없습니다.")
         }
     }
 }

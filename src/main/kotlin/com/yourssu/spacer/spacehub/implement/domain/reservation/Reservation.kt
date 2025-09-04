@@ -1,5 +1,6 @@
 package com.yourssu.spacer.spacehub.implement.domain.reservation
 
+import com.yourssu.spacer.spacehub.implement.domain.meeting.RegularMeeting
 import com.yourssu.spacer.spacehub.implement.support.exception.PasswordNotEncryptedException
 import com.yourssu.spacer.spacehub.implement.domain.space.Space
 import com.yourssu.spacer.spacehub.implement.support.security.password.EncryptPasswordValidator
@@ -11,6 +12,7 @@ class Reservation(
     val bookerName: String,
     val reservationTime: ReservationTime,
     val encryptedPersonalPassword: String,
+    val regularMeeting: RegularMeeting? = null
 ) {
 
     init {
