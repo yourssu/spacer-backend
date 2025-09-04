@@ -15,7 +15,8 @@ class RegularMeeting(
     val endDate: LocalDate,
     val dayOfWeek: DayOfWeek,
     val startTime: LocalTime,
-    val endTime: LocalTime
+    val endTime: LocalTime,
+    val encryptedPersonalPassword: String,
 ) {
     init {
         if (startDate.isAfter(endDate)) {

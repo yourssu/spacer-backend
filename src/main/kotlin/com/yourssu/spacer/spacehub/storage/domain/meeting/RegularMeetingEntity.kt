@@ -15,7 +15,7 @@ class RegularMeetingEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id", nullable = false, foreignKey = ForeignKey(name = "fk_regular_meeting_space"))
     val space: SpaceEntity,
 
@@ -36,7 +36,10 @@ class RegularMeetingEntity(
     val startTime: LocalTime,
 
     @Column(nullable = false)
-    val endTime: LocalTime
+    val endTime: LocalTime,
+
+    @Column(nullable = false)
+    val encryptedPersonalPassword: String
 ) {
     companion object {
         fun from(regularMeeting: RegularMeeting) = RegularMeetingEntity(
@@ -47,7 +50,8 @@ class RegularMeetingEntity(
             endDate = regularMeeting.endDate,
             dayOfWeek = regularMeeting.dayOfWeek,
             startTime = regularMeeting.startTime,
-            endTime = regularMeeting.endTime
+            endTime = regularMeeting.endTime,
+            encryptedPersonalPassword = regularMeeting.encryptedPersonalPassword
         )
     }
 
@@ -59,6 +63,7 @@ class RegularMeetingEntity(
         endDate = endDate,
         dayOfWeek = dayOfWeek,
         startTime = startTime,
-        endTime = endTime
+        endTime = endTime,
+        encryptedPersonalPassword = encryptedPersonalPassword
     )
 }

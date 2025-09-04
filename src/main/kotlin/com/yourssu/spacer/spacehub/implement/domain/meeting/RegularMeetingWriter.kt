@@ -12,4 +12,8 @@ class RegularMeetingWriter(
     fun write(meeting: RegularMeeting): RegularMeeting {
         return regularMeetingRepository.save(meeting)
     }
+
+    fun delete(regularMeeting: RegularMeeting) {
+        regularMeetingRepository.delete(regularMeeting)
+    }
 }

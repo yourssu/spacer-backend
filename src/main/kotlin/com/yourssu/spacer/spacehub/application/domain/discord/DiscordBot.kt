@@ -31,7 +31,8 @@ class DiscordBot(
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
             Commands.slash("동방예약", "공간을 예약합니다."),
             Commands.slash("예약조회", "특정 날짜의 예약 현황을 조회합니다."),
-            Commands.slash("정기회의", "요일, 시간을 지정하여 정기적으로 공간을 예약합니다.")
+            Commands.slash("정기회의등록", "정기 회의 등록 후, 지정한 요일 및 시간에 정기적으로 공간을 예약합니다."),
+            Commands.slash("정기회의조회", "등록된 정기 회의 목록을 조회하고 삭제합니다.")
         ).queue()
     }
 }

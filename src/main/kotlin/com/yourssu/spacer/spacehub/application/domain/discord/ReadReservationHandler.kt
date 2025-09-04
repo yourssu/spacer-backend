@@ -84,7 +84,7 @@ class ReadReservationHandler(
                     embed.addField(title, booker, false)
                 }
 
-                val selectMenu = StringSelectMenu.create(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT)
+                val selectMenu = StringSelectMenu.create(DiscordConstants.RESERVATION_DELETE_SPACE_SELECT)
                     .setPlaceholder("취소할 예약을 선택하세요")
                     .addOptions(
                         result.reservationDtos.sortedBy { it.startDateTime }.map {
