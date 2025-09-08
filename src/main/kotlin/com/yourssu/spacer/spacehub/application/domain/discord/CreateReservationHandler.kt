@@ -42,13 +42,19 @@ class CreateReservationHandler(
 
     fun handleSelectMenu(event: StringSelectInteractionEvent) {
         val spaceId = event.selectedOptions.first().value
-        val modal = Modal.create("${DiscordConstants.RESERVATION_CREATE_MODAL}:$spaceId", "예약 정보 입력")
+        val modal = Modal.create("${DiscordConstants.RESERVATION_CREATE_MODAL}:$spaceId", "예약 정보 입력 (형식 맞춰서)")
             .addActionRow(TextInput.create("user_name", "예약자명", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(
-                TextInput.create("date", "예약 날짜 (YYYY-MM-DD)", TextInputStyle.SHORT).setRequired(true).build()
+                TextInput.create("date", "예약 날짜 (YYYY-MM-DD, 공백 없이)", TextInputStyle.SHORT)
+                    .setPlaceholder("YYYY-MM-DD")
+                    .setRequired(true)
+                    .build()
             )
             .addActionRow(
-                TextInput.create("time_range", "예약 시간 (HH:mm~HH:mm)", TextInputStyle.SHORT).setRequired(true).build()
+                TextInput.create("time_range", "예약 시간 (HH:mm~HH:mm, 공백 없이, 분은 00 or 30)", TextInputStyle.SHORT)
+                    .setPlaceholder("HH:mm~HH:mm")
+                    .setRequired(true)
+                    .build()
             )
             .addActionRow(TextInput.create("password", "공간 비밀번호", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(

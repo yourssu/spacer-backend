@@ -45,7 +45,7 @@ class CreateRegularMeetingHandler(
     fun handleSelectMenu(event: StringSelectInteractionEvent) {
         val spaceId = event.selectedOptions.first().value
 
-        val modal = Modal.create("${DiscordConstants.RECURRING_RESERVATION_CREATE_MODAL}:$spaceId", "정기 회의 정보 입력")
+        val modal = Modal.create("${DiscordConstants.RECURRING_RESERVATION_CREATE_MODAL}:$spaceId", "정기 회의 정보 입력 (형식 맞춰서)")
             .addActionRow(TextInput.create("team_name", "팀 이름", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(
                 TextInput.create("day_of_week", "요일 (월, 화, 수...)", TextInputStyle.SHORT)
@@ -54,13 +54,13 @@ class CreateRegularMeetingHandler(
                     .build()
             )
             .addActionRow(
-                TextInput.create("time_range", "예약 시간 (HH:mm~HH:mm)(분은 00 또는 30만 가능)", TextInputStyle.SHORT)
+                TextInput.create("time_range", "예약 시간 (HH:mm~HH:mm, 공백 없이, 분은 00 or 30)", TextInputStyle.SHORT)
                     .setPlaceholder("HH:mm~HH:mm")
                     .setRequired(true)
                     .build()
             )
             .addActionRow(
-                TextInput.create("date_range", "예약 기간 (시작일~종료일)", TextInputStyle.SHORT)
+                TextInput.create("date_range", "예약 기간 (YYYY-MM-DD~YYYY-MM-DD, 공백 없이)", TextInputStyle.SHORT)
                     .setPlaceholder("YYYY-MM-DD~YYYY-MM-DD")
                     .setRequired(true)
                     .build()
