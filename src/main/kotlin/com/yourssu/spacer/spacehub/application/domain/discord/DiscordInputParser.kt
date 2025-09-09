@@ -12,7 +12,7 @@ class DiscordInputParser {
 
     companion object {
         private val DATE_REGEX = Regex("""^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$""")
-        private val TIME_RANGE_REGEX = Regex("""^([01]\d|2[0-3]):(00|30)~([01]\d|2[0-3]):(00|30)$""")
+        private val TIME_RANGE_REGEX = Regex("""^([01]\d|2[0-3]):(00|30)~([01]\d|2[0-3]):(00|30|59)$""")
     }
 
     fun parseDayOfWeek(dayOfWeekStr: String): DayOfWeek {
