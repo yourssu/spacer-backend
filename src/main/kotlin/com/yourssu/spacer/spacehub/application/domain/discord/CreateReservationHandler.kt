@@ -93,7 +93,11 @@ class CreateReservationHandler(
         val timeRangeStr = event.getValue("time_range")!!.asString
 
         val date = inputParser.parseDate(dateStr)
-        val (startTime, endTime) = inputParser.parseTimeRange(timeRangeStr)
+        var (startTime, endTime) = inputParser.parseTimeRange(timeRangeStr)
+
+        if (endTime == java.time.LocalTime.MIDNIGHT) {
+            endTime = java.time.LocalTime.of(23, 59)
+        }
 
         return CreateReservationCommand(
             spaceId = event.modalId.split(":")[1].toLong(),
