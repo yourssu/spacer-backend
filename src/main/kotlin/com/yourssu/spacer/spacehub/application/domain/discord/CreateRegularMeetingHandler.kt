@@ -118,7 +118,12 @@ class CreateRegularMeetingHandler(
         val passwordsStr = event.getValue("passwords")!!.asString
 
         val dayOfWeek = inputParser.parseDayOfWeek(dayOfWeekStr)
-        val (startTime, endTime) = inputParser.parseTimeRange(timeRangeStr)
+        var (startTime, endTime) = inputParser.parseTimeRange(timeRangeStr)
+
+        if (endTime == java.time.LocalTime.MIDNIGHT) {
+            endTime = java.time.LocalTime.of(23, 59)
+        }
+
         val (startDate, endDate) = inputParser.parseDateRange(dateRangeStr)
         val (spacePassword, personalPassword) = inputParser.parsePasswords(passwordsStr)
 
