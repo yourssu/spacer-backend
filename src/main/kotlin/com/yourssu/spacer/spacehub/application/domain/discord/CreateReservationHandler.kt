@@ -52,7 +52,7 @@ class CreateReservationHandler(
             )
             .addActionRow(
                 TextInput.create("time_range", "예약 시간 (HH:mm~HH:mm, 공백 없이, 분은 00 or 30)", TextInputStyle.SHORT)
-                    .setPlaceholder("HH:mm~HH:mm")
+                    .setPlaceholder("HH:mm~HH:mm (자정까지 예약 시 23:59로 입력)")
                     .setRequired(true)
                     .build()
             )
