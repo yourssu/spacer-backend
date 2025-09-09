@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
+import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.meeting.CreateRegularMeetingCommand
 import com.yourssu.spacer.spacehub.business.domain.meeting.RegularMeetingService
 import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservationException
@@ -23,7 +24,7 @@ import java.util.*
 class CreateRegularMeetingHandler(
     private val regularMeetingService: RegularMeetingService,
     private val uiFactory: DiscordUIFactory,
-    private val inputParser: DiscordInputParser
+    private val inputParser: InputParser
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
