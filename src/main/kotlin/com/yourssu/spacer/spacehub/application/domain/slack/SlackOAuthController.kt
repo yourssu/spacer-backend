@@ -36,34 +36,43 @@ class SlackOAuthController(
         if (response.isOk) {
             val teamId = response.team.id
             val accessToken = response.accessToken
+            val installerUserId = response.authedUser.id
 
-            // TODO: 현재 앱을 설치하는 사용자를 기반으로 organizationId를 결정해야 합니다.
-            // 지금은 임시로 1L을 사용합니다.
-            val organizationId = 1L
-
-            // 이미 설치된 워크스페이스인지 확인
             val existingLink = slackWorkspaceLinkRepository.findByTeamId(teamId)
 
             if (existingLink != null) {
-                // 이미 존재하면 토큰만 업데이트
                 val updatedLink = SlackWorkspaceLink(
                     id = existingLink.id,
-                    teamId = existingLink.teamId,
+                    teamId = teamId,
                     accessToken = accessToken,
-                    organizationId = existingLink.organizationId // 기존 organizationId 유지
+                    organizationId = existingLink.organizationId
                 )
                 slackWorkspaceLinkRepository.save(updatedLink)
-                logger.info("Slack 앱 토큰 업데이트 완료: teamId={}", teamId)
             } else {
-                // 새로 설치하는 경우
                 val newLink = SlackWorkspaceLink(
                     teamId = teamId,
                     accessToken = accessToken,
-                    organizationId = organizationId
+                    organizationId = null
                 )
                 slackWorkspaceLinkRepository.save(newLink)
-                logger.info("새로운 Slack 앱 설치 완료: teamId={}", teamId)
             }
+
+            try {
+                slack.methods(accessToken).chatPostEphemeral {
+                    it.channel(installerUserId)
+                        .user(installerUserId)
+                        .text(
+                            """
+                          환영합니다! 🎉 SPACER 예약 봇이 성공적으로 설치되었습니다.
+                          이제 마지막 단계로, 아무 채널에서나 `/워크스페이스등록` 명령어를 입력하여
+                          현재 워크스페이스를 당신의 단체와 연동해주세요.
+                          """.trimIndent()
+                        )
+                }
+            } catch (e: Exception) {
+                logger.error("설치 후 환영 메시지 전송 실패: teamId=$teamId", e)
+            }
+
             return "✅ 예약 봇이 워크스페이스에 성공적으로 설치되었습니다!"
         } else {
             logger.error("Slack API Error: {}", response.error)

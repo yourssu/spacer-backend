@@ -23,8 +23,8 @@ class SlackWorkspaceLinkEntity(
     @Column(nullable = false)
     val accessToken: String,
 
-    @Column(nullable = false)
-    val organizationId: Long
+    @Column(nullable = true)
+    val organizationId: Long?
 ) {
     companion object {
         fun from(link: SlackWorkspaceLink) = SlackWorkspaceLinkEntity(

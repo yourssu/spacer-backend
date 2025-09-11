@@ -30,7 +30,8 @@ import java.time.LocalDateTime
 class CreateReservationSlackHandler(
     private val reservationService: ReservationService,
     private val uiFactory: SlackUIFactory,
-    private val inputParser: InputParser
+    private val inputParser: InputParser,
+    private val slackReplyHelper: SlackReplyHelper
 ) : SlackSlashHandler, SlackViewSubmissionHandler, SlackBlockActionHandler {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -52,9 +53,9 @@ class CreateReservationSlackHandler(
 
     override fun handle(req: BlockActionPayload, ctx: ActionContext): Response {
         val selectedValue = req.actions?.firstOrNull()?.selectedOption?.value
+
         if (selectedValue == null) {
             logger.warn("공간 선택 메뉴에서 값을 찾을 수 없음: actionId=${req.actions?.firstOrNull()?.actionId}")
-            // ✅ FIX: Block Action에서는 ack()로 먼저 신호를 보내고, respond()로 메시지를 보냅니다.
             ctx.respond { it.responseType("ephemeral").text(":warning: 공간 선택이 올바르지 않습니다.") }
             return ctx.ack()
         }
@@ -76,21 +77,21 @@ class CreateReservationSlackHandler(
 
             val dateStr = values(req)["date_block"]?.get("date_input")?.selectedDate ?: ""
             val timeRangeStr = values(req)["time_range_block"]?.get("time_range_input")?.value ?: ""
-            ctx.postEphemeralSuccess("예약 완료: ${command.bookerName} / $dateStr $timeRangeStr")
+            slackReplyHelper.sendSuccess(ctx, "예약 완료: ${command.bookerName} / $dateStr $timeRangeStr")
 
             logger.info("슬랙 봇 예약 생성 성공: ${command.bookerName}, ${command.startDateTime}")
 
         } catch (e: InputParseException) {
-            ctx.postEphemeralError("입력 오류: ${e.message}")
+            slackReplyHelper.sendError(ctx, "입력 오류: ${e.message}")
             return ctx.ack()
         } catch (e: ReservationConflictException) {
-            ctx.postEphemeralError("예약 실패: ${e.message}")
+            slackReplyHelper.sendError(ctx, "예약 실패: ${e.message}")
         } catch (e: PasswordNotMatchException) {
-            ctx.postEphemeralError("예약 실패: ${e.message}")
+            slackReplyHelper.sendError(ctx, "예약 실패: ${e.message}")
         } catch (e: InvalidReservationException) {
-            ctx.postEphemeralError("예약 실패: ${e.message}")
+            slackReplyHelper.sendError(ctx, "예약 실패: ${e.message}")
         } catch (e: Exception) {
-            ctx.postEphemeralError("알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
+            slackReplyHelper.sendError(ctx, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
             logger.error("알 수 없는 예약 생성 오류", e)
         }
         return ctx.ack()

@@ -2,7 +2,6 @@ package com.yourssu.spacer.spacehub.storage.domain.slack
 
 import com.yourssu.spacer.spacehub.implement.domain.slack.SlackWorkspaceLink
 import com.yourssu.spacer.spacehub.implement.domain.slack.SlackWorkspaceLinkRepository
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -15,7 +14,7 @@ class SlackWorkspaceLinkRepositoryImpl(
     }
 
     override fun findByTeamId(teamId: String): SlackWorkspaceLink? {
-        return jpaSlackWorkspaceLinkRepository.findByIdOrNull(teamId)?.toDomain()
+        return jpaSlackWorkspaceLinkRepository.findByTeamId(teamId)?.toDomain()
     }
 
     override fun delete(slackWorkspaceLink: SlackWorkspaceLink) {

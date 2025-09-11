@@ -24,7 +24,7 @@ class SlackConfig(
         val app = App(appConfig)
 
         app.service(object : InstallationService {
-            override fun findBot(enterpriseId: String?, teamId: String): Bot? {
+            override fun findBot(enterpriseId: String?, teamId: String): Bot {
                 val link = slackWorkspaceLinkReader.getByTeamId(teamId)
                 return link.let { BotImpl(botAccessToken = it.accessToken, teamId = it.teamId) }
             }

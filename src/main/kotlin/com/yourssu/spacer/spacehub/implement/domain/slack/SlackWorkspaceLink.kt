@@ -4,5 +4,5 @@ class SlackWorkspaceLink(
     val id: Long? = null,
     val teamId: String,
     val accessToken: String,
-    val organizationId: Long
+    val organizationId: Long?
 )
