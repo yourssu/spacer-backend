@@ -11,51 +11,39 @@ class SlackReplyHelper(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun sendSuccess(ctx: ViewSubmissionContext, message: String) {
-        sendDirectMessage(ctx, "✅ $message")
+    fun sendSuccess(ctx: ViewSubmissionContext, channelId: String, message: String) {
+        sendEphemeralMessage(ctx, channelId, "✅ $message")
     }
 
-    fun sendError(ctx: ViewSubmissionContext, message: String) {
-        sendDirectMessage(ctx, "❌ $message")
+    fun sendError(ctx: ViewSubmissionContext, channelId: String, message: String) {
+        sendEphemeralMessage(ctx, channelId, "❌ $message")
     }
 
-    private fun sendDirectMessage(ctx: ViewSubmissionContext, text: String) {
+    private fun sendEphemeralMessage(ctx: ViewSubmissionContext, channelId: String, text: String) {
         try {
             val botToken = slackWorkspaceLinkReader.getByTeamId(ctx.teamId).accessToken
 
-            val conversation = ctx.client().conversationsOpen {
+            val response = ctx.client().chatPostEphemeral {
                 it.token(botToken)
-                    .users(listOf(ctx.requestUserId))
+                    .channel(channelId)
+                    .user(ctx.requestUserId)
+                    .text(text)
             }
-
-            if (conversation.isOk) {
-                val channelId = conversation.channel.id
-                val response = ctx.client().chatPostMessage {
-                    it.token(botToken)
-                        .channel(channelId)
-                        .text(text)
-                }
-                if (!response.isOk) {
-                    logger.error(
-                        "DM 메시지 전송 실패: teamId={}, userId={}, error={}",
-                        ctx.teamId,
-                        ctx.requestUserId,
-                        response.error
-                    )
-                }
-            } else {
+            if (!response.isOk) {
                 logger.error(
-                    "DM 채널 열기 실패: teamId={}, userId={}, error={}",
+                    "Ephemeral 메시지 전송 실패: teamId={}, userId={}, channelId={}, error={}",
                     ctx.teamId,
                     ctx.requestUserId,
-                    conversation.error
+                    channelId,
+                    response.error
                 )
             }
         } catch (e: Exception) {
             logger.error(
-                "DM 메시지 전송 중 예외 발생: teamId={}, userId={}",
+                "Ephemeral 메시지 전송 중 예외 발생: teamId={}, userId={}, channelId={}",
                 ctx.teamId,
                 ctx.requestUserId,
+                channelId,
                 e
             )
         }

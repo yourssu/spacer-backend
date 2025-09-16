@@ -37,14 +37,14 @@ class CreateWorkspaceLinkHandler(
     override val callbackId = SlackConstants.WORKSPACE_LINK_MODAL_SUBMIT
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {
-        val existingLink = slackWorkspaceLinkRepository.findByTeamId(ctx.teamId)
+        val existingLink = slackWorkspaceLinkReader.getByTeamId(ctx.teamId)
 
-        if (existingLink != null && existingLink.organizationId != null) {
+        if (existingLink?.organizationId != null) {
             return ctx.ack("✅ 이미 연동된 워크스페이스입니다!")
         }
 
         try {
-            val modalView = buildServerLinkModal()
+            val modalView = buildServerLinkModal(ctx.channelId)
             val botToken = existingLink?.accessToken
             val apiResponse = ctx.client().viewsOpen {
                 it.token(botToken)
@@ -62,11 +62,18 @@ class CreateWorkspaceLinkHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
+        val channelId = req.view.privateMetadata
+
+        val values = req.view.state.values
+        val email = values[SlackConstants.BlockIds.EMAIL]?.get(SlackConstants.ActionIds.EMAIL)?.value ?: ""
+        val password = values[SlackConstants.BlockIds.PASSWORD]?.get(SlackConstants.ActionIds.PASSWORD)?.value ?: ""
+
         val loginCommand = LoginCommand(
-            email = req.view.state.values["email_block"]?.get("email_input")?.value ?: "",
-            password = req.view.state.values["password_block"]?.get("password_input")?.value ?: "",
+            email = email,
+            password = password,
             requestTime = LocalDateTime.now()
         )
+
         try {
             val organizationId = authenticationService.login(loginCommand).id
             val existingLink = slackWorkspaceLinkReader.getByTeamId(ctx.teamId)
@@ -79,21 +86,24 @@ class CreateWorkspaceLinkHandler(
             )
             slackWorkspaceLinkRepository.save(updatedLink)
 
-            slackReplyHelper.sendSuccess(ctx, "워크스페이스가 SPACER와 성공적으로 연동되었습니다!")
+            slackReplyHelper.sendSuccess(ctx, channelId, "워크스페이스가 SPACER와 성공적으로 연동되었습니다!")
         } catch (e: OrganizationNotFoundException) {
-            slackReplyHelper.sendError(ctx, "가입 이력 없음: + ${e.message}")
+            val errors = mapOf(SlackConstants.BlockIds.EMAIL to e.message)
+            return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: PasswordNotMatchException) {
-            slackReplyHelper.sendError(ctx, "비밀번호 불일치: + ${e.message}")
+            val errors = mapOf(SlackConstants.BlockIds.PASSWORD to e.message)
+            return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
+            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
             logger.error("알 수 없는 워크스페이스 연동 오류", e)
         }
         return ctx.ack()
     }
 
-    private fun buildServerLinkModal(): View {
+    private fun buildServerLinkModal(channelId: String): View {
         return Views.view { view ->
             view.callbackId(callbackId)
+                .privateMetadata(channelId)
                 .type("modal")
                 .title(Views.viewTitle { it.type("plain_text").text("워크스페이스 등록") })
                 .submit(Views.viewSubmit { it.type("plain_text").text("등록") })
@@ -101,12 +111,14 @@ class CreateWorkspaceLinkHandler(
                 .blocks(
                     Blocks.asBlocks(
                         Blocks.input { input ->
-                            input.blockId("email_block").label(BlockCompositions.plainText("이메일"))
-                            input.element(BlockElements.emailTextInput { it.actionId("email_input") })
+                            input.blockId(SlackConstants.BlockIds.EMAIL)
+                                .label(BlockCompositions.plainText(SlackConstants.Keywords.EMAIL))
+                            input.element(BlockElements.emailTextInput { it.actionId(SlackConstants.ActionIds.EMAIL) })
                         },
                         Blocks.input { input ->
-                            input.blockId("password_block").label(BlockCompositions.plainText("비밀번호"))
-                            input.element(BlockElements.plainTextInput { it.actionId("password_input") })
+                            input.blockId(SlackConstants.BlockIds.PASSWORD)
+                                .label(BlockCompositions.plainText(SlackConstants.Keywords.PASSWORD))
+                            input.element(BlockElements.plainTextInput { it.actionId(SlackConstants.ActionIds.PASSWORD) })
                         }
                     )
                 )

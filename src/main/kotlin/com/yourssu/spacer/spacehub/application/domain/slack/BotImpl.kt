@@ -2,10 +2,6 @@ package com.yourssu.spacer.spacehub.application.domain.slack
 
 import com.slack.api.bolt.model.Bot
 
-/**
- * Slack SDK의 Bot 인터페이스를 구현하는 DTO입니다.
- * SDK와의 호환성을 위해 모든 getter/setter를 메서드로 명시적으로 오버라이드합니다.
- */
 class BotImpl(
     private var botAccessToken: String,
     private var teamId: String
