@@ -9,6 +9,9 @@ object SlackConstants {
     const val RESERVATION_READ_SPACE_SELECT = "reservation_read_space_select"
     const val RESERVATION_READ_MODAL_SUBMIT = "reservation_read_modal_submit"
 
+    const val RESERVATION_DELETE_SPACE_SELECT = "reservation_delete_space_select"
+    const val RESERVATION_DELETE_MODAL_CALLBACK_ID_PREFIX = "reservation_delete_modal_submit"
+
     object BlockIds {
         const val EMAIL = "email_block"
         const val PASSWORD = "password_block"
@@ -21,6 +24,10 @@ object SlackConstants {
         const val PERSONAL_PASSWORD = "personal_password_block"
 
         const val RESERVATION_READ_DATE = "reservation_read_date_block"
+
+        const val RESERVATION_DELETE_DATE = "reservation_delete_date_block"
+        const val RESERVATION_DELETE_SELECT = "reservation_delete_select_block"
+        const val RESERVATION_DELETE_PASSWORD = "reservation_delete_password_block"
     }
 
     object ActionIds {
@@ -35,6 +42,10 @@ object SlackConstants {
         const val PERSONAL_PASSWORD = "personal_password_input"
 
         const val RESERVATION_READ_DATE = "reservation_read_date_input"
+
+        const val RESERVATION_DELETE_DATE = "reservation_delete_date_input"
+        const val RESERVATION_DELETE_SELECT = "reservation_delete_select_input"
+        const val RESERVATION_DELETE_PASSWORD = "reservation_delete_password_input"
     }
 
     object Keywords {
