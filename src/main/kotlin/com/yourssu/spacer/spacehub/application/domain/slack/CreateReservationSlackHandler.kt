@@ -9,6 +9,7 @@ import com.slack.api.bolt.request.builtin.SlashCommandRequest
 import com.slack.api.bolt.response.Response
 import com.slack.api.model.block.Blocks
 import com.slack.api.model.block.composition.BlockCompositions
+import com.slack.api.model.block.composition.OptionObject
 import com.slack.api.model.block.element.BlockElements
 import com.slack.api.model.view.View
 import com.slack.api.model.view.Views
@@ -22,6 +23,7 @@ import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservation
 import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.business.support.exception.ReservationConflictException
 import com.yourssu.spacer.spacehub.implement.domain.slack.SlackWorkspaceLinkReader
+import com.yourssu.spacer.spacehub.implement.domain.space.SpaceReader
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -31,9 +33,11 @@ import java.time.LocalDateTime
 class CreateReservationSlackHandler(
     private val reservationService: ReservationService,
     private val slackWorkspaceLinkReader: SlackWorkspaceLinkReader,
+    private val spaceReader: SpaceReader,
     private val uiFactory: SlackUIFactory,
     private val inputParser: InputParser,
-    private val slackReplyHelper: SlackReplyHelper
+    private val slackReplyHelper: SlackReplyHelper,
+    private val slackTimeOptionFactory: SlackTimeOptionFactory
 ) : SlackSlashHandler, SlackViewSubmissionHandler, SlackBlockActionHandler {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -56,7 +60,7 @@ class CreateReservationSlackHandler(
 
     override fun handle(req: BlockActionPayload, ctx: ActionContext): Response {
         try {
-            val selectedValue = req.actions?.firstOrNull()?.selectedOption?.value
+            val selectedValue = req.actions?.firstOrNull()?.selectedOption?.value?.toLongOrNull()
             val channelId = req.container.channelId
             if (selectedValue == null) {
                 ctx.respond { it.responseType("ephemeral").text(":warning: 공간 선택이 올바르지 않습니다.") }
@@ -67,7 +71,9 @@ class CreateReservationSlackHandler(
             val botToken = link.accessToken
 
             val spaceId = selectedValue
-            val modalView = buildReservationModal(spaceId, channelId)
+            val space = spaceReader.getById(spaceId)
+            val timeOptions = slackTimeOptionFactory.generateTimeOptions(space.getOpeningTime(), space.getClosingTime())
+            val modalView = buildReservationModal(spaceId.toString(), channelId, timeOptions)
 
             val apiResponse = ctx.client().viewsOpen { it.token(botToken).triggerId(ctx.triggerId).view(modalView) }
             if (!apiResponse.isOk) {
@@ -99,13 +105,14 @@ class CreateReservationSlackHandler(
             logger.info("슬랙 봇 예약 생성 성공: ${command.bookerName}, ${command.startDateTime} ~ ${command.endDateTime}")
 
         } catch (e: InputParseException) {
+            val errorMessage = e.message ?: "입력값이 올바르지 않습니다."
             val blockId = when {
-                SlackConstants.Keywords.BOOKER_NAME in (e.message ?: "") -> SlackConstants.BlockIds.BOOKER_NAME
-                SlackConstants.Keywords.RESERVATION_DATE in (e.message ?: "") -> SlackConstants.BlockIds.RESERVATION_DATE
-                SlackConstants.Keywords.START_TIME in (e.message ?: "") -> SlackConstants.BlockIds.START_TIME
-                SlackConstants.Keywords.END_TIME in (e.message ?: "") -> SlackConstants.BlockIds.END_TIME
-                SlackConstants.Keywords.SPACE_PASSWORD in (e.message ?: "") -> SlackConstants.BlockIds.SPACE_PASSWORD
-                SlackConstants.Keywords.PERSONAL_PASSWORD in (e.message ?: "") -> SlackConstants.BlockIds.PERSONAL_PASSWORD
+                SlackConstants.Keywords.BOOKER_NAME in errorMessage -> SlackConstants.BlockIds.BOOKER_NAME
+                SlackConstants.Keywords.RESERVATION_DATE in errorMessage -> SlackConstants.BlockIds.RESERVATION_DATE
+                SlackConstants.Keywords.START_TIME in errorMessage -> SlackConstants.BlockIds.START_TIME
+                SlackConstants.Keywords.END_TIME in errorMessage -> SlackConstants.BlockIds.END_TIME
+                SlackConstants.Keywords.SPACE_PASSWORD in errorMessage -> SlackConstants.BlockIds.SPACE_PASSWORD
+                SlackConstants.Keywords.PERSONAL_PASSWORD in errorMessage -> SlackConstants.BlockIds.PERSONAL_PASSWORD
                 else -> SlackConstants.BlockIds.BOOKER_NAME
             }
             val errors = mapOf(blockId to e.message)
@@ -167,13 +174,7 @@ class CreateReservationSlackHandler(
         }
     }
 
-    private fun buildReservationModal(spaceId: String, channelId: String): View {
-        val timeOptions = (0..23).flatMap { h ->
-            listOf(
-                BlockCompositions.option(BlockCompositions.plainText("%02d:00".format(h)), "%02d:00".format(h)),
-                BlockCompositions.option(BlockCompositions.plainText("%02d:30".format(h)), "%02d:30".format(h))
-            )
-        } + listOf(BlockCompositions.option(BlockCompositions.plainText("23:59"), "23:59"))
+    private fun buildReservationModal(spaceId: String, channelId: String, timeOptions: List<OptionObject>): View {
 
         return Views.view { view ->
             view.callbackId(callbackId)

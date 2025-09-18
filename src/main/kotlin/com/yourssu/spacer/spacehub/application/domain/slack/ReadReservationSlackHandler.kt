@@ -86,8 +86,8 @@ class ReadReservationSlackHandler(
         val spaceId = metadataParts[1].toLong()
 
         try {
-            val dateStr = req.view.state.values[SlackConstants.BlockIds.RESERVATION_READ_DATE]
-                ?.get(SlackConstants.ActionIds.RESERVATION_READ_DATE)?.selectedDate
+            val dateStr = req.view.state.values[SlackConstants.BlockIds.RESERVATION_DATE]
+                ?.get(SlackConstants.ActionIds.RESERVATION_DATE)?.selectedDate
                 ?: throw InputParseException("날짜를 선택해주세요.")
 
             val date = inputParser.parseDate(dateStr)
@@ -131,11 +131,11 @@ class ReadReservationSlackHandler(
                 .blocks(
                     Blocks.asBlocks(
                         Blocks.input {
-                            it.blockId(SlackConstants.BlockIds.RESERVATION_READ_DATE)
+                            it.blockId(SlackConstants.BlockIds.RESERVATION_DATE)
                                 .label(BlockCompositions.plainText("조회할 날짜"))
                                 .element(
                                     BlockElements.datePicker { p ->
-                                        p.actionId(SlackConstants.ActionIds.RESERVATION_READ_DATE)
+                                        p.actionId(SlackConstants.ActionIds.RESERVATION_DATE)
                                             .initialDate(LocalDate.now().toString())
                                     }
                                 )

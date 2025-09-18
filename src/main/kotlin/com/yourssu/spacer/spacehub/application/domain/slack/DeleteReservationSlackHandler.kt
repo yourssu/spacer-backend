@@ -36,7 +36,7 @@ class DeleteReservationSlackHandler(
 
     override val command = Commands.RESERVATION_DELETE
     override val actionId = SlackConstants.RESERVATION_DELETE_SPACE_SELECT
-    override val callbackId = SlackConstants.RESERVATION_DELETE_MODAL_CALLBACK_ID_PREFIX
+    override val callbackId = SlackConstants.RESERVATION_DELETE_MODAL_SUBMIT
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {
         val organizationId = uiFactory.getVerifiedOrganizationId(ctx) ?: return ctx.ack()
@@ -79,18 +79,18 @@ class DeleteReservationSlackHandler(
         try {
             val viewState = req.view.state.values
 
-            if (viewState.containsKey(SlackConstants.BlockIds.RESERVATION_DELETE_DATE)) {
+            if (viewState.containsKey(SlackConstants.BlockIds.RESERVATION_DATE)) {
                 return handleDateSubmission(req, ctx)
             }
 
-            else if (viewState.containsKey(SlackConstants.BlockIds.RESERVATION_DELETE_SELECT)) {
+            else if (viewState.containsKey(SlackConstants.BlockIds.RESERVATION_SELECT)) {
                 return handleFinalSubmission(req, ctx)
             }
         } catch (e: PasswordNotMatchException) {
-            val errors = mapOf(SlackConstants.BlockIds.RESERVATION_DELETE_PASSWORD to e.message)
+            val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: InputParseException) {
-            val errors = mapOf(SlackConstants.BlockIds.RESERVATION_DELETE_PASSWORD to e.message)
+            val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
             val channelId = req.view.privateMetadata.split(":")[0]
@@ -105,8 +105,8 @@ class DeleteReservationSlackHandler(
         val channelId = metadataParts[0]
         val spaceId = metadataParts[1].toLong()
 
-        val dateStr = req.view.state.values[SlackConstants.BlockIds.RESERVATION_DELETE_DATE]
-            ?.get(SlackConstants.ActionIds.RESERVATION_DELETE_DATE)?.selectedDate
+        val dateStr = req.view.state.values[SlackConstants.BlockIds.RESERVATION_DATE]
+            ?.get(SlackConstants.ActionIds.RESERVATION_DATE)?.selectedDate
             ?: throw InputParseException("날짜를 선택해주세요.")
 
         val date = inputParser.parseDate(dateStr)
@@ -114,7 +114,7 @@ class DeleteReservationSlackHandler(
 
         if (reservations.reservationDtos.isEmpty()) {
             val errors = mapOf(
-                SlackConstants.BlockIds.RESERVATION_DELETE_DATE to "해당 날짜에 예약이 존재하지 않습니다."
+                SlackConstants.BlockIds.RESERVATION_DATE to "해당 날짜에 예약이 존재하지 않습니다."
             )
             return ctx.ack { it.responseAction("errors").errors(errors) }
         }
@@ -127,12 +127,12 @@ class DeleteReservationSlackHandler(
         val channelId = req.view.privateMetadata
         val values = req.view.state.values
 
-        val reservationId = values[SlackConstants.BlockIds.RESERVATION_DELETE_SELECT]
-            ?.get(SlackConstants.ActionIds.RESERVATION_DELETE_SELECT)?.selectedOption?.value?.toLong()
+        val reservationId = values[SlackConstants.BlockIds.RESERVATION_SELECT]
+            ?.get(SlackConstants.ActionIds.RESERVATION_SELECT)?.selectedOption?.value?.toLong()
             ?: throw InputParseException("취소할 예약을 선택해주세요.")
 
-        val password = values[SlackConstants.BlockIds.RESERVATION_DELETE_PASSWORD]
-            ?.get(SlackConstants.ActionIds.RESERVATION_DELETE_PASSWORD)?.value
+        val password = values[SlackConstants.BlockIds.PERSONAL_PASSWORD]
+            ?.get(SlackConstants.ActionIds.PERSONAL_PASSWORD)?.value
             ?: throw InputParseException("개인 비밀번호를 입력해주세요.")
 
         if (password.isBlank()) throw InputParseException("개인 비밀번호를 입력해주세요.")
@@ -153,11 +153,11 @@ class DeleteReservationSlackHandler(
                 .blocks(
                     Blocks.asBlocks(
                         Blocks.input {
-                            it.blockId(SlackConstants.BlockIds.RESERVATION_DELETE_DATE)
+                            it.blockId(SlackConstants.BlockIds.RESERVATION_DATE)
                                 .label(BlockCompositions.plainText("취소할 예약의 날짜"))
                                 .element(
                                     BlockElements.datePicker { p ->
-                                        p.actionId(SlackConstants.ActionIds.RESERVATION_DELETE_DATE)
+                                        p.actionId(SlackConstants.ActionIds.RESERVATION_DATE)
                                             .initialDate(java.time.LocalDate.now().toString())
                                     }
                                 )
@@ -184,22 +184,22 @@ class DeleteReservationSlackHandler(
                 .blocks(
                     Blocks.asBlocks(
                         Blocks.input {
-                            it.blockId(SlackConstants.BlockIds.RESERVATION_DELETE_SELECT)
+                            it.blockId(SlackConstants.BlockIds.RESERVATION_SELECT)
                                 .label(BlockCompositions.plainText("취소할 예약 선택"))
                                 .element(
                                     BlockElements.staticSelect { s ->
-                                        s.actionId(SlackConstants.ActionIds.RESERVATION_DELETE_SELECT)
+                                        s.actionId(SlackConstants.ActionIds.RESERVATION_SELECT)
                                             .placeholder(BlockCompositions.plainText("예약을 선택하세요"))
                                             .options(options)
                                     }
                                 )
                         },
                         Blocks.input {
-                            it.blockId(SlackConstants.BlockIds.RESERVATION_DELETE_PASSWORD)
+                            it.blockId(SlackConstants.BlockIds.PERSONAL_PASSWORD)
                                 .label(BlockCompositions.plainText("개인 비밀번호"))
                                 .element(
                                     BlockElements.plainTextInput { p ->
-                                        p.actionId(SlackConstants.ActionIds.RESERVATION_DELETE_PASSWORD)
+                                        p.actionId(SlackConstants.ActionIds.PERSONAL_PASSWORD)
                                             .placeholder(BlockCompositions.plainText("예약 시 사용한 비밀번호"))
                                     }
                                 )
