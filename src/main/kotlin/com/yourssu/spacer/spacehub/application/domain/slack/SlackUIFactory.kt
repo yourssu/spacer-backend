@@ -18,10 +18,6 @@ class SlackUIFactory(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    /**
-     * 커맨드가 들어온 워크스페이스가 서비스에 연동되었는지 확인하고, 연동된 organizationId를 반환합니다.
-     * 연동되지 않았거나 오류 발생 시, 사용자에게 직접 에러 메시지를 보내고 null을 반환합니다.
-     */
     fun getVerifiedOrganizationId(ctx: SlashCommandContext): Long? {
         val teamId = ctx.teamId
         return try {
@@ -39,10 +35,7 @@ class SlackUIFactory(
         }
     }
 
-    /**
-     * 특정 단체에 속한 모든 공간을 보여주는 Select Menu(드롭다운) UI 블록을 생성합니다.
-     */
-    fun createSpaceSelectMenu(actionId: String, placeholder: String, organizationId: Long): LayoutBlock {
+    fun createSpaceSelectMenu(actionId: String, text:String, placeholder: String, organizationId: Long): LayoutBlock {
         val spacesResult = spaceService.readAllByOrganizationId(organizationId)
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
 
@@ -55,7 +48,7 @@ class SlackUIFactory(
         }
 
         return Blocks.section { section ->
-            section.text(BlockCompositions.markdownText("예약을 진행할 공간을 선택해주세요."))
+            section.text(BlockCompositions.markdownText(text))
             section.accessory(
                 BlockElements.staticSelect { select ->
                     select.actionId(actionId)

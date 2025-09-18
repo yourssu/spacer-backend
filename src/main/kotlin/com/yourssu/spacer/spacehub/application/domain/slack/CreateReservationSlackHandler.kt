@@ -47,6 +47,7 @@ class CreateReservationSlackHandler(
 
         val spaceSelectMenu = uiFactory.createSpaceSelectMenu(
             actionId = actionId,
+            text = "예약을 진행할 공간을 선택해주세요.",
             placeholder = "예약할 공간 선택",
             organizationId = organizationId
         )

@@ -19,7 +19,6 @@ class SlackCommandListener(
         }
         viewSubmissionHandlerMap.forEach { (callbackId, handler) ->
             app.viewSubmission(callbackId) { req, ctx ->
-                // 콜백 ID가 동적으로 변할 수 있으므로 startsWith로 매칭
                 if (req.payload.view.callbackId.startsWith(callbackId)) {
                     handler.handle(req.payload, ctx)
                 } else {

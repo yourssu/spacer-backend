@@ -1,31 +1,40 @@
 package com.yourssu.spacer.spacehub.application.support.constants
 
 object SlackConstants {
+    const val WORKSPACE_LINK_MODAL_SUBMIT = "workspace_link_modal_submit"
+
     const val RESERVATION_CREATE_SPACE_SELECT = "reservation_create_space_select"
     const val RESERVATION_CREATE_MODAL_SUBMIT = "reservation_create_modal_submit"
 
-    const val WORKSPACE_LINK_MODAL_SUBMIT = "workspace_link_modal_submit"
+    const val RESERVATION_READ_SPACE_SELECT = "reservation_read_space_select"
+    const val RESERVATION_READ_MODAL_SUBMIT = "reservation_read_modal_submit"
 
     object BlockIds {
         const val EMAIL = "email_block"
         const val PASSWORD = "password_block"
+
         const val BOOKER_NAME = "booker_name_block"
         const val RESERVATION_DATE = "date_block"
         const val START_TIME = "start_time_block"
         const val END_TIME = "end_time_block"
         const val SPACE_PASSWORD = "space_password_block"
         const val PERSONAL_PASSWORD = "personal_password_block"
+
+        const val RESERVATION_READ_DATE = "reservation_read_date_block"
     }
 
     object ActionIds {
         const val EMAIL = "email_input"
         const val PASSWORD = "password_input"
+
         const val BOOKER_NAME = "booker_name_input"
         const val RESERVATION_DATE = "date_input"
         const val START_TIME = "start_time_input"
         const val END_TIME = "end_time_input"
         const val SPACE_PASSWORD = "space_password_input"
         const val PERSONAL_PASSWORD = "personal_password_input"
+
+        const val RESERVATION_READ_DATE = "reservation_read_date_input"
     }
 
     object Keywords {
