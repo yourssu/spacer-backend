@@ -39,7 +39,8 @@ class DeleteReservationSlackHandler(
     override val callbackId = SlackConstants.RESERVATION_DELETE_MODAL_SUBMIT
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {
-        val organizationId = uiFactory.getVerifiedOrganizationId(ctx) ?: return ctx.ack()
+        val organizationId = uiFactory.getVerifiedOrganizationId(ctx.teamId)
+            ?: return ctx.ack(":warning: 서버가 단체와 연동되지 않았습니다. `/서버등록` 후 사용해주세요.")
 
         val spaceSelectMenu = uiFactory.createSpaceSelectMenu(
             actionId = actionId,

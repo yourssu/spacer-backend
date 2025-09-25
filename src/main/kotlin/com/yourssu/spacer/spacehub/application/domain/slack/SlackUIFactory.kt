@@ -1,6 +1,5 @@
 package com.yourssu.spacer.spacehub.application.domain.slack
 
-import com.slack.api.bolt.context.builtin.SlashCommandContext
 import com.slack.api.model.block.Blocks
 import com.slack.api.model.block.LayoutBlock
 import com.slack.api.model.block.composition.BlockCompositions
@@ -18,19 +17,11 @@ class SlackUIFactory(
 ) {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun getVerifiedOrganizationId(ctx: SlashCommandContext): Long? {
-        val teamId = ctx.teamId
+    fun getVerifiedOrganizationId(teamId: String): Long? {
         return try {
-            val link = slackWorkspaceLinkRepository.findByTeamId(teamId)
-            if (link == null) {
-                ctx.ack(":warning: 서버가 단체와 연동되지 않았습니다. `/서버등록` 후 사용해주세요.")
-                null
-            } else {
-                link.organizationId
-            }
+            slackWorkspaceLinkRepository.findByTeamId(teamId)?.organizationId
         } catch (e: Exception) {
             logger.error("조직 정보 확인 중 오류 발생: teamId=$teamId", e)
-            ctx.ack(":x: 조직 정보를 확인하는 중 알 수 없는 오류가 발생했습니다.")
             null
         }
     }
