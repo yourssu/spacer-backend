@@ -23,6 +23,10 @@ class SlackOAuthController(
 
     @GetMapping("/slack/oauth/callback")
     fun handleCallback(@RequestParam code: String): String {
+
+        logger.info("## Client ID: {}", clientId)
+        logger.info("## Client Secret (앞 8자리): {}", clientSecret.substring(0, 8))
+
         val slack = Slack.getInstance()
         val response = try {
             slack.methods().oauthV2Access { req ->
