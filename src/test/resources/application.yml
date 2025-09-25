@@ -34,3 +34,9 @@ token:
 discord:
   bot:
     token: dummy-token
+
+slack:
+  client-id: dummy-client-id
+  client-secret: dummy-client-secret
+  signing-secret: dummy-signing-secret
+  app-token: dummy-app-token
