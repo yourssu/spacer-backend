@@ -15,6 +15,8 @@ object SlackConstants {
     const val REGULAR_MEETING_CREATE_SPACE_SELECT = "regular_meeting_create_space_select"
     const val REGULAR_MEETING_CREATE_MODAL_SUBMIT = "regular_meeting_create_modal_submit"
 
+    const val REGULAR_MEETING_READ_SPACE_SELECT = "regular_meeting_read_space_select"
+
     object BlockIds {
         const val EMAIL = "email_block"
         const val PASSWORD = "password_block"

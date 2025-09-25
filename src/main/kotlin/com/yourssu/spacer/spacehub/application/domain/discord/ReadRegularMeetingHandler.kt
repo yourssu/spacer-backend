@@ -39,7 +39,7 @@ class ReadRegularMeetingHandler(
         val spaceId = event.selectedOptions.first().value.toLong()
 
         try {
-            val result = regularMeetingService.readAllBySpaceId(spaceId)
+            val result = regularMeetingService.readActiveRegularMeetings(spaceId)
             val embed = EmbedBuilder()
                 .setTitle("📅 정기 회의 목록")
                 .setDescription("선택한 공간의 정기 회의입니다.")

@@ -14,10 +14,10 @@ class RegularMeetingRepositoryImpl(
         return jpaRegularMeetingRepository.save(RegularMeetingEntity.from(regularMeeting)).toDomain()
     }
 
-    override fun findAllBySpaceId(
+    override fun findActiveBySpaceId(
         spaceId: Long
     ): List<RegularMeeting> {
-        return jpaRegularMeetingRepository.findAllBySpaceId(spaceId)
+        return jpaRegularMeetingRepository.findActiveBySpaceId(spaceId)
             .map { it.toDomain() }
     }
 

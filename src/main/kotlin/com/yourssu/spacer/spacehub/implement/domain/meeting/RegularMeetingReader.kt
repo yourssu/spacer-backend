@@ -16,7 +16,7 @@ class RegularMeetingReader(
             ?: throw RegularMeetingNotFoundException("정기 회의를 찾을 수 없습니다.")
     }
 
-    fun getAllBySpace(space: Space): List<RegularMeeting> {
-        return regularMeetingRepository.findAllBySpaceId(space.id!!)
+    fun findActiveBySpace(space: Space): List<RegularMeeting> {
+        return regularMeetingRepository.findActiveBySpaceId(space.id!!)
     }
 }

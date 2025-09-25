@@ -45,9 +45,10 @@ class RegularMeetingService(
         return recurringReservationCreator.create(param)
     }
 
-    fun readAllBySpaceId(spaceId: Long): ReadRegularMeetingsResult {
+    fun readActiveRegularMeetings(spaceId: Long): ReadRegularMeetingsResult {
         val space: Space = spaceReader.getById(spaceId)
-        val regularMeetings: List<RegularMeeting> = regularMeetingReader.getAllBySpace(space)
+        val regularMeetings: List<RegularMeeting> = regularMeetingReader.findActiveBySpace(space)
+
         return ReadRegularMeetingsResult.from(regularMeetings)
     }
 

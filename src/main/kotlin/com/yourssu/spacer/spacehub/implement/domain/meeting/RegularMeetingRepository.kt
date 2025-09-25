@@ -4,7 +4,7 @@ interface RegularMeetingRepository {
 
     fun save(regularMeeting: RegularMeeting): RegularMeeting
 
-    fun findAllBySpaceId(spaceId: Long): List<RegularMeeting>
+    fun findActiveBySpaceId(spaceId: Long): List<RegularMeeting>
 
     fun findById(meetingId: Long): RegularMeeting?
 
