@@ -8,4 +8,5 @@ object Commands {
     const val RESERVATION_DELETE = "/예약취소"
     const val REGULAR_MEETING_CREATE = "/정기회의생성"
     const val REGULAR_MEETING_READ = "/정기회의조회"
+    const val REGULAR_MEETING_DELETE = "/정기회의취소"
 }

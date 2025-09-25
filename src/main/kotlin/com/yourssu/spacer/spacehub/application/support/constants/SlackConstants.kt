@@ -17,6 +17,9 @@ object SlackConstants {
 
     const val REGULAR_MEETING_READ_SPACE_SELECT = "regular_meeting_read_space_select"
 
+    const val REGULAR_MEETING_DELETE_SPACE_SELECT = "regularMeetingDeleteSpaceSelect"
+    const val REGULAR_MEETING_DELETE_MODAL_SUBMIT = "regularMeetingDeleteModalSubmit"
+
     object BlockIds {
         const val EMAIL = "email_block"
         const val PASSWORD = "password_block"
@@ -34,6 +37,8 @@ object SlackConstants {
         const val DAY_OF_WEEK = "day_of_week_block"
         const val START_DATE = "start_date_block"
         const val END_DATE = "end_date_block"
+
+        const val REGULAR_MEETING_SELECT = "regular_meeting_select_block"
     }
 
     object ActionIds {
@@ -53,6 +58,8 @@ object SlackConstants {
         const val DAY_OF_WEEK = "day_of_week_input"
         const val START_DATE = "start_date_input"
         const val END_DATE = "end_date_input"
+
+        const val REGULAR_MEETING_SELECT = "regular_meeting_delete_select_input"
     }
 
     object Keywords {
