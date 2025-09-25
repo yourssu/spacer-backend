@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
+import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
 import com.yourssu.spacer.spacehub.business.domain.space.SpaceService
 import net.dv8tion.jda.api.EmbedBuilder
@@ -24,7 +25,7 @@ class ReadReservationHandler(
     private val uiFactory: DiscordUIFactory,
     private val spaceService: SpaceService,
     private val reservationService: ReservationService,
-    private val inputParser: DiscordInputParser
+    private val inputParser: InputParser
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 

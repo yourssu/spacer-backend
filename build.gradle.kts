@@ -48,6 +48,11 @@ dependencies {
 
     // Discord Bot (JDA)
     implementation("net.dv8tion:JDA:5.0.0-beta.22")
+
+    // Slack Bolt SDK
+    implementation("com.slack.api:bolt-socket-mode:1.35.0")
+    implementation("javax.websocket:javax.websocket-api:1.1")
+    implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.18")
 }
 
 kotlin {

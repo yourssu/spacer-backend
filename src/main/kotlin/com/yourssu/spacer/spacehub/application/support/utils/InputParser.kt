@@ -1,4 +1,4 @@
-package com.yourssu.spacer.spacehub.application.domain.discord
+package com.yourssu.spacer.spacehub.application.support.utils
 
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
 import org.springframework.stereotype.Component
@@ -8,7 +8,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeParseException
 
 @Component
-class DiscordInputParser {
+class InputParser {
 
     companion object {
         private val DATE_REGEX = Regex("""^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$""")
