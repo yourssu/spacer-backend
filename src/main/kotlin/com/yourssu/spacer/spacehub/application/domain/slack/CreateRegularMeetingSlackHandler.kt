@@ -50,7 +50,7 @@ class CreateRegularMeetingSlackHandler(
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {
         val organizationId = uiFactory.getVerifiedOrganizationId(ctx.teamId)
-            ?: return ctx.ack(":warning: 서버가 단체와 연동되지 않았습니다. `/서버등록` 후 사용해주세요.")
+            ?: return ctx.ack(SlackConstants.Messages.UNLINKED_WORKSPACE)
 
         val selectMenu = uiFactory.createSpaceSelectMenu(
             actionId = actionId,

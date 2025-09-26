@@ -79,4 +79,8 @@ object SlackConstants {
         const val START_DATE = "시작일"
         const val END_DATE = "종료일"
     }
+
+    object Messages {
+        const val UNLINKED_WORKSPACE = ":warning: 서버가 단체와 연동되지 않았습니다. `/워크스페이스등록` 후 사용해주세요."
+    }
 }
