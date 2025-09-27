@@ -37,7 +37,6 @@ class CreateRegularMeetingSlackHandler(
     private val uiFactory: SlackUIFactory,
     private val slackWorkspaceLinkReader: SlackWorkspaceLinkReader,
     private val spaceReader: SpaceReader,
-    private val slackReplyHelper: SlackReplyHelper,
     private val slackTimeOptionFactory: SlackTimeOptionFactory,
     private val inputParser: InputParser,
 ) : SlackSlashHandler, SlackBlockActionHandler, SlackViewSubmissionHandler {
@@ -88,7 +87,6 @@ class CreateRegularMeetingSlackHandler(
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
         val metadataParts = req.view.privateMetadata.split(":")
-        val channelId = metadataParts[0]
         val spaceId = metadataParts[1].toLong()
 
         try {
@@ -104,8 +102,7 @@ class CreateRegularMeetingSlackHandler(
                 > • *요일*: ${command.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)}
                 > • *시간*: ${command.startTime}~${command.endTime}
             """.trimIndent()
-            slackReplyHelper.sendSuccess(ctx, channelId, successMessage)
-
+            ctx.respond { it.responseType("ephemeral").text(successMessage) }
         } catch (e: InputParseException) {
             val errorMessage = e.message ?: "입력값이 올바르지 않습니다."
             val blockId = when {
@@ -134,7 +131,7 @@ class CreateRegularMeetingSlackHandler(
             val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
+            ctx.respond { it.responseType("ephemeral").text(SlackConstants.Messages.UNKNOWN_ERROR) }
             logger.error("알 수 없는 정기 회의 생성 오류", e)
         }
         return ctx.ack()

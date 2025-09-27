@@ -82,5 +82,6 @@ object SlackConstants {
 
     object Messages {
         const val UNLINKED_WORKSPACE = ":warning: 서버가 단체와 연동되지 않았습니다. `/워크스페이스등록` 후 사용해주세요."
+        const val UNKNOWN_ERROR = "warning: 알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요."
     }
 }

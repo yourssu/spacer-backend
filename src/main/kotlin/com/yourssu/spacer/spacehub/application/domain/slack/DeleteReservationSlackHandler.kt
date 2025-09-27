@@ -29,7 +29,6 @@ class DeleteReservationSlackHandler(
     private val uiFactory: SlackUIFactory,
     private val reservationService: ReservationService,
     private val slackWorkspaceLinkReader: SlackWorkspaceLinkReader,
-    private val slackReplyHelper: SlackReplyHelper,
     private val inputParser: InputParser
 ): SlackSlashHandler, SlackBlockActionHandler, SlackViewSubmissionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -94,9 +93,8 @@ class DeleteReservationSlackHandler(
             val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            val channelId = req.view.privateMetadata.split(":")[0]
             logger.error("알 수 없는 예약 취소 오류", e)
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
+            ctx.respond { it.responseType("ephemeral").text(SlackConstants.Messages.UNKNOWN_ERROR) }
         }
         return ctx.ack()
     }
@@ -125,7 +123,6 @@ class DeleteReservationSlackHandler(
     }
 
     private fun handleFinalSubmission(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
-        val channelId = req.view.privateMetadata
         val values = req.view.state.values
 
         val reservationId = values[SlackConstants.BlockIds.RESERVATION_SELECT]
@@ -139,7 +136,7 @@ class DeleteReservationSlackHandler(
         if (password.isBlank()) throw InputParseException("개인 비밀번호를 입력해주세요.")
 
         reservationService.delete(reservationId, password)
-        slackReplyHelper.sendSuccess(ctx, channelId, "예약이 성공적으로 취소되었습니다.")
+        ctx.respond { it.responseType("ephemeral").text("✅ 예약이 성공적으로 취소되었습니다.") }
         return ctx.ack()
     }
 

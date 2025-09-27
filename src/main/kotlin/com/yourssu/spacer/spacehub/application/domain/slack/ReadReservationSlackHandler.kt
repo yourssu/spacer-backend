@@ -30,7 +30,6 @@ class ReadReservationSlackHandler(
     private val spaceService: SpaceService,
     private val reservationService: ReservationService,
     private val slackWorkspaceLinkReader: SlackWorkspaceLinkReader,
-    private val slackReplyHelper: SlackReplyHelper,
     private val inputParser: InputParser
 ) : SlackSlashHandler, SlackBlockActionHandler, SlackViewSubmissionHandler {
 
@@ -83,7 +82,6 @@ class ReadReservationSlackHandler(
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
         val metadataParts = req.view.privateMetadata.split(":")
-        val channelId = metadataParts[0]
         val spaceId = metadataParts[1].toLong()
 
         try {
@@ -108,13 +106,11 @@ class ReadReservationSlackHandler(
                     }
                 "📅 *${space.name}* (${date}) 예약 현황\n$reservationList"
             }
-
-            slackReplyHelper.sendSuccess(ctx, channelId, message)
-
+            ctx.respond { it.responseType("ephemeral").text(message) }
         } catch (e: InputParseException) {
-            slackReplyHelper.sendError(ctx, channelId, "입력 오류: ${e.message}")
+            ctx.respond { it.responseType("ephemeral").text("입력 오류: ${e.message}") }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생하여 조회에 실패했습니다.")
+            ctx.respond { it.responseType("ephemeral").text(SlackConstants.Messages.UNKNOWN_ERROR) }
             logger.error("알 수 없는 예약 조회 오류", e)
         }
 

@@ -27,8 +27,7 @@ import java.time.LocalDateTime
 class CreateWorkspaceLinkHandler(
     private val slackWorkspaceLinkRepository: SlackWorkspaceLinkRepository,
     private val slackWorkspaceLinkReader: SlackWorkspaceLinkReader,
-    private val authenticationService: AuthenticationService,
-    private val slackReplyHelper: SlackReplyHelper
+    private val authenticationService: AuthenticationService
 ) : SlackSlashHandler, SlackViewSubmissionHandler {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -62,7 +61,6 @@ class CreateWorkspaceLinkHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
-        val channelId = req.view.privateMetadata
 
         val values = req.view.state.values
         val email = values[SlackConstants.BlockIds.EMAIL]?.get(SlackConstants.ActionIds.EMAIL)?.value ?: ""
@@ -86,7 +84,7 @@ class CreateWorkspaceLinkHandler(
             )
             slackWorkspaceLinkRepository.save(updatedLink)
 
-            slackReplyHelper.sendSuccess(ctx, channelId, "워크스페이스가 SPACER와 성공적으로 연동되었습니다!")
+            ctx.respond { it.responseType("ephemeral").text("✅ 워크스페이스가 SPACER와 성공적으로 연동되었습니다!") }
         } catch (e: OrganizationNotFoundException) {
             val errors = mapOf(SlackConstants.BlockIds.EMAIL to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
@@ -94,7 +92,7 @@ class CreateWorkspaceLinkHandler(
             val errors = mapOf(SlackConstants.BlockIds.PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
+            ctx.respond { it.responseType("ephemeral").text(SlackConstants.Messages.UNKNOWN_ERROR) }
             logger.error("알 수 없는 워크스페이스 연동 오류", e)
         }
         return ctx.ack()
