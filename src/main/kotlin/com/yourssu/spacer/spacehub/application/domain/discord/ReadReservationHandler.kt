@@ -9,8 +9,6 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
@@ -48,7 +46,7 @@ class ReadReservationHandler(
         val spaceId = event.selectedOptions.first().value
         val modal = Modal.create("${DiscordConstants.RESERVATION_READ_MODAL}:$spaceId", "날짜 입력")
             .addActionRow(
-                TextInput.create("date", "조회할 날짜 (YYYY-MM-DD)", TextInputStyle.SHORT)
+                TextInput.create(DiscordConstants.EventIds.DATE, "조회할 날짜 (YYYY-MM-DD)", TextInputStyle.SHORT)
                     .setRequired(true)
                     .setPlaceholder(LocalDate.now().toString())
                     .setValue(LocalDate.now().toString())
@@ -61,7 +59,7 @@ class ReadReservationHandler(
     fun handleReadModal(event: ModalInteractionEvent) {
         try {
             val spaceId = event.modalId.split(":")[1].toLong()
-            val dateStr = event.getValue("date")!!.asString
+            val dateStr = event.getValue(DiscordConstants.EventIds.DATE)!!.asString
             val date = inputParser.parseDate(dateStr)
 
             val result = reservationService.readAllByDate(spaceId, date)
@@ -79,25 +77,12 @@ class ReadReservationHandler(
             } else {
                 val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
                 result.reservationDtos.sortedBy { it.startDateTime }.forEach { reservation ->
-                    val title =
-                        "${reservation.startDateTime.format(timeFormatter)} ~ ${reservation.endDateTime.format(timeFormatter)}"
+                    val title = "${reservation.startDateTime.format(timeFormatter)} ~ ${reservation.endDateTime.format(timeFormatter)}"
                     val booker = "예약자: ${reservation.bookerName}"
                     embed.addField(title, booker, false)
                 }
 
-                val selectMenu = StringSelectMenu.create(DiscordConstants.RESERVATION_DELETE_SPACE_SELECT)
-                    .setPlaceholder("취소할 예약을 선택하세요")
-                    .addOptions(
-                        result.reservationDtos.sortedBy { it.startDateTime }.map {
-                            val label =
-                                "${it.startDateTime.format(timeFormatter)}~${it.endDateTime.format(timeFormatter)} (${it.bookerName})"
-                            SelectOption.of(label, it.id.toString())
-                        }
-                    )
-                    .build()
-
                 event.replyEmbeds(embed.build())
-                    .addActionRow(selectMenu)
                     .setEphemeral(true)
                     .queue()
             }

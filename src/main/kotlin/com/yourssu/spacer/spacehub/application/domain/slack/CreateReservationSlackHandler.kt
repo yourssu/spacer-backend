@@ -42,7 +42,7 @@ class CreateReservationSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = SlashCommands.RESERVATION_CREATE
+    override val command = "/${SlashCommands.RESERVATION_CREATE}"
     override val actionId = SlackConstants.RESERVATION_CREATE_SPACE_SELECT
     override val callbackId = SlackConstants.RESERVATION_CREATE_MODAL_SUBMIT
 

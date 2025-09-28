@@ -34,7 +34,7 @@ class DiscordBot(
             Commands.slash(SlashCommands.RESERVATION_READ, "특정 날짜의 예약 현황을 조회합니다."),
             Commands.slash(SlashCommands.RESERVATION_DELETE, "특정 날짜의 예약 정보를 취소합니다."),
             Commands.slash(SlashCommands.REGULAR_MEETING_CREATE, "정기 회의 등록 후, 지정한 요일 및 시간에 정기적으로 공간을 예약합니다."),
-            Commands.slash(SlashCommands.RESERVATION_READ, "현재 진행 중인 정기 회의 목록을 조회합니다."),
+            Commands.slash(SlashCommands.REGULAR_MEETING_READ, "현재 진행 중인 정기 회의 목록을 조회합니다."),
             Commands.slash(SlashCommands.REGULAR_MEETING_DELETE, "특정 정기 회의를 취소합니다.")
         ).queue()
     }

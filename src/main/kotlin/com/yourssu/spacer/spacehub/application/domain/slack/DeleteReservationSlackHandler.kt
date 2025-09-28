@@ -34,7 +34,7 @@ class DeleteReservationSlackHandler(
 ): SlackSlashHandler, SlackBlockActionHandler, SlackViewSubmissionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = SlashCommands.RESERVATION_DELETE
+    override val command = "/${SlashCommands.RESERVATION_DELETE}"
     override val actionId = SlackConstants.RESERVATION_DELETE_SPACE_SELECT
     override val callbackId = SlackConstants.RESERVATION_DELETE_MODAL_SUBMIT
 

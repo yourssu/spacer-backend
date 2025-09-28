@@ -36,7 +36,7 @@ class ReadReservationSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = SlashCommands.RESERVATION_READ
+    override val command = "/${SlashCommands.RESERVATION_READ}"
     override val actionId = SlackConstants.RESERVATION_READ_SPACE_SELECT
     override val callbackId = SlackConstants.RESERVATION_READ_MODAL_SUBMIT
 

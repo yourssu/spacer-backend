@@ -44,7 +44,7 @@ class CreateRegularMeetingSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = SlashCommands.REGULAR_MEETING_CREATE
+    override val command = "/${SlashCommands.REGULAR_MEETING_CREATE}"
     override val actionId = SlackConstants.REGULAR_MEETING_CREATE_SPACE_SELECT
     override val callbackId = SlackConstants.REGULAR_MEETING_CREATE_MODAL_SUBMIT
 

@@ -33,7 +33,7 @@ class CreateWorkspaceLinkHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = SlashCommands.WORKSPACE_LINK_CREATE
+    override val command = "/${SlashCommands.WORKSPACE_LINK_CREATE}"
     override val callbackId = SlackConstants.WORKSPACE_LINK_MODAL_SUBMIT
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {

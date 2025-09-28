@@ -25,7 +25,7 @@ class ReadRegularMeetingSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = SlashCommands.REGULAR_MEETING_READ
+    override val command = "/${SlashCommands.REGULAR_MEETING_READ}"
     override val actionId = SlackConstants.REGULAR_MEETING_READ_SPACE_SELECT
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {

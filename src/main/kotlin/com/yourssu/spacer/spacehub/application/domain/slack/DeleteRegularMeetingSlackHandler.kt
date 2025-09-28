@@ -35,7 +35,7 @@ class DeleteRegularMeetingSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = SlashCommands.REGULAR_MEETING_DELETE
+    override val command = "/${SlashCommands.REGULAR_MEETING_DELETE}"
     override val actionId = SlackConstants.REGULAR_MEETING_DELETE_SPACE_SELECT
     override val callbackId = SlackConstants.REGULAR_MEETING_DELETE_MODAL_SUBMIT
 

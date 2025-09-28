@@ -27,7 +27,7 @@ class DiscordCommandListener(
             SlashCommands.RESERVATION_DELETE -> deleteReservationHandler.handleSlashCommand(event)
             SlashCommands.REGULAR_MEETING_CREATE -> createRegularMeetingHandler.handleSlashCommand(event)
             SlashCommands.REGULAR_MEETING_READ -> readRegularMeetingHandler.handleSlashCommand(event)
-            SlashCommands.REGULAR_MEETING_DELETE -> deleteRegularMeetingHandler.handleSlashCommand(event)
+//            SlashCommands.REGULAR_MEETING_DELETE -> deleteRegularMeetingHandler.handleSlashCommand(event)
         }
     }
 
@@ -38,6 +38,8 @@ class DiscordCommandListener(
             event.componentId.startsWith(DiscordConstants.RESERVATION_READ_SPACE_SELECT) ->
                 readReservationHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.RESERVATION_DELETE_SPACE_SELECT) ->
+                deleteReservationHandler.handleSelectMenu(event)
+            event.componentId.startsWith(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT) ->
                 deleteReservationHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.RECURRING_RESERVATION_CREATE_SPACE_SELECT) ->
                 createRegularMeetingHandler.handleSelectMenu(event)
