@@ -12,7 +12,8 @@ import java.time.format.DateTimeParseException
 class InputParser {
 
     companion object {
-        private val DATE_REGEX = Regex("""^\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12]\d|3[01])$""")
+        private val DATE_REGEX_YY_MM_DD = Regex("""^\d{2}\.(0[1-9]|1[0-2])\.(0[1-9]|[12]\d|3[01])$""")
+        private val DATE_REGEX_YYYY_MM_DD = Regex("""^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$""")
         private val TIME_RANGE_REGEX = Regex("""^([01]\d|2[0-3]):(00|30)~([01]\d|2[0-3]):(00|30|59)$""")
     }
 
@@ -30,13 +31,21 @@ class InputParser {
     }
 
     fun parseDate(dateStr: String): LocalDate {
-        if (!DATE_REGEX.matches(dateStr)) {
+        if (!DATE_REGEX_YY_MM_DD.matches(dateStr)) {
             throw InputParseException("날짜는 'YY.MM.DD' 형식으로 입력해주세요.")
         }
         try {
             return LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yy.MM.dd"))
         } catch (e: DateTimeParseException) {
             throw InputParseException("유효하지 않은 날짜입니다. (예: 23.02.30)")
+        }
+    }
+
+    fun parseSlackDate(dateStr: String): LocalDate {
+        try {
+            return LocalDate.parse(dateStr)
+        } catch (e: DateTimeParseException) {
+            throw InputParseException("유효하지 않은 날짜입니다.")
         }
     }
 
@@ -61,6 +70,18 @@ class InputParser {
         }
         val startDate = parseDate(dateParts[0].trim())
         val endDate = parseDate(dateParts[1].trim())
+
+        if (startDate.isAfter(endDate)) {
+            throw InputParseException("시작일은 종료일보다 이전이거나 같아야 합니다.")
+        }
+        return Pair(startDate, endDate)
+    }
+
+    fun parseSlackDateRange(dateRangeStr: String): Pair<LocalDate, LocalDate> {
+        val dateParts = dateRangeStr.split('~')
+
+        val startDate = parseSlackDate(dateParts[0].trim())
+        val endDate = parseSlackDate(dateParts[1].trim())
 
         if (startDate.isAfter(endDate)) {
             throw InputParseException("시작일은 종료일보다 이전이거나 같아야 합니다.")

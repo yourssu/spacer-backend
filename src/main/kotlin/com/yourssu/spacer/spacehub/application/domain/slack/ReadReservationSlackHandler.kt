@@ -89,7 +89,7 @@ class ReadReservationSlackHandler(
                 ?.get(SlackConstants.ActionIds.RESERVATION_DATE)?.selectedDate
                 ?: throw InputParseException("날짜를 선택해주세요.")
 
-            val date = inputParser.parseDate(dateStr)
+            val date = inputParser.parseSlackDate(dateStr)
             val reservations = reservationService.readAllByDate(spaceId, date)
             val space = spaceService.readById(spaceId)
 
