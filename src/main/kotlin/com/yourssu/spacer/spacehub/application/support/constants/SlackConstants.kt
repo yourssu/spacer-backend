@@ -27,7 +27,6 @@ object SlackConstants {
         const val BOOKER_NAME = "booker_name_block"
         const val START_TIME = "start_time_block"
         const val END_TIME = "end_time_block"
-        const val SPACE_PASSWORD = "space_password_block"
         const val PERSONAL_PASSWORD = "personal_password_block"
 
         const val RESERVATION_DATE = "date_block"
@@ -48,7 +47,6 @@ object SlackConstants {
         const val BOOKER_NAME = "booker_name_input"
         const val START_TIME = "start_time_input"
         const val END_TIME = "end_time_input"
-        const val SPACE_PASSWORD = "space_password_input"
         const val PERSONAL_PASSWORD = "personal_password_input"
 
         const val RESERVATION_DATE = "date_input"
@@ -69,7 +67,6 @@ object SlackConstants {
         const val BOOKER_NAME = "예약자명"
         const val START_TIME = "시작 시간"
         const val END_TIME = "종료 시간"
-        const val SPACE_PASSWORD = "공간 비밀번호"
         const val PERSONAL_PASSWORD = "개인 비밀번호"
 
         const val RESERVATION_DATE = "날짜"

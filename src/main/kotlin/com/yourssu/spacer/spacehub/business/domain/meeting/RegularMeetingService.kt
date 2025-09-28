@@ -32,7 +32,9 @@ class RegularMeetingService(
     fun createRegularMeeting(command: CreateRegularMeetingCommand): List<LocalDate> {
         val space: Space = spaceReader.getById(command.spaceId)
 
-        passwordEncoder.matchesOrThrow(command.password, space.getEncryptedReservationPassword(), "예약 비밀번호가 일치하지 않습니다.")
+        if (command.password != null) {
+            passwordEncoder.matchesOrThrow(command.password, space.getEncryptedReservationPassword(), "예약 비밀번호가 일치하지 않습니다.")
+        }
         PasswordValidator.validate(PasswordFormat.PERSONAL_RESERVATION_PASSWORD, command.rawPersonalPassword)
         val encryptedPersonalPassword: String = passwordEncoder.encode(command.rawPersonalPassword)
 

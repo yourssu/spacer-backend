@@ -70,8 +70,8 @@ class CreateRegularMeetingHandler(
                     .build()
             )
             .addActionRow(
-                TextInput.create("passwords", "비밀번호 (공간/개인)", TextInputStyle.SHORT)
-                    .setPlaceholder("공간비밀번호/개인비밀번호 형식으로 입력")
+                TextInput.create("raw_personal_password", "개인 비밀번호", TextInputStyle.SHORT)
+                    .setPlaceholder("회의 삭제 시 사용할 비밀번호")
                     .setRequired(true)
                     .build()
             )
@@ -118,18 +118,16 @@ class CreateRegularMeetingHandler(
         val dayOfWeekStr = event.getValue("day_of_week")!!.asString
         val timeRangeStr = event.getValue("time_range")!!.asString
         val dateRangeStr = event.getValue("date_range")!!.asString
-        val passwordsStr = event.getValue("passwords")!!.asString
+        val personalPassword = event.getValue("raw_personal_password")!!.asString
 
         val dayOfWeek = inputParser.parseDayOfWeek(dayOfWeekStr)
         val (startTime, endTime) = inputParser.parseTimeRange(timeRangeStr)
-
         val (startDate, endDate) = inputParser.parseDateRange(dateRangeStr)
-        val (spacePassword, personalPassword) = inputParser.parsePasswords(passwordsStr)
 
         return CreateRegularMeetingCommand(
             spaceId = event.modalId.split(":")[1].toLong(),
             teamName = event.getValue("team_name")!!.asString,
-            password = spacePassword,
+            password = null,
             rawPersonalPassword = personalPassword,
             dayOfWeek = dayOfWeek,
             startTime = startTime,

@@ -20,7 +20,6 @@ import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.meeting.CreateRegularMeetingCommand
 import com.yourssu.spacer.spacehub.business.domain.meeting.RegularMeetingService
 import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservationException
-import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.business.support.exception.ReservationConflictException
 import com.yourssu.spacer.spacehub.implement.domain.slack.SlackWorkspaceLinkReader
 import com.yourssu.spacer.spacehub.implement.domain.space.SpaceReader
@@ -120,7 +119,6 @@ class CreateRegularMeetingSlackHandler(
                 SlackConstants.Keywords.END_TIME in errorMessage -> SlackConstants.BlockIds.END_TIME
                 SlackConstants.Keywords.START_DATE in errorMessage -> SlackConstants.BlockIds.START_DATE
                 SlackConstants.Keywords.END_DATE in errorMessage -> SlackConstants.BlockIds.END_DATE
-                SlackConstants.Keywords.SPACE_PASSWORD in errorMessage -> SlackConstants.BlockIds.SPACE_PASSWORD
                 SlackConstants.Keywords.PERSONAL_PASSWORD in errorMessage -> SlackConstants.BlockIds.PERSONAL_PASSWORD
                 else -> SlackConstants.BlockIds.TEAM_NAME
             }
@@ -131,9 +129,6 @@ class CreateRegularMeetingSlackHandler(
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: InvalidReservationException) {
             val errors = mapOf(SlackConstants.BlockIds.START_TIME to e.message)
-            return ctx.ack { it.responseAction("errors").errors(errors) }
-        } catch (e: PasswordNotMatchException) {
-            val errors = mapOf(SlackConstants.BlockIds.SPACE_PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: InvalidPasswordException) {
             val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
@@ -154,7 +149,6 @@ class CreateRegularMeetingSlackHandler(
         val endTimeStr = values[SlackConstants.BlockIds.END_TIME]?.get(SlackConstants.ActionIds.END_TIME)?.selectedOption?.value
         val startDateStr = values[SlackConstants.BlockIds.START_DATE]?.get(SlackConstants.ActionIds.START_DATE)?.selectedDate
         val endDateStr = values[SlackConstants.BlockIds.END_DATE]?.get(SlackConstants.ActionIds.END_DATE)?.selectedDate
-        val spacePassword = values[SlackConstants.BlockIds.SPACE_PASSWORD]?.get(SlackConstants.ActionIds.SPACE_PASSWORD)?.value
         val personalPassword = values[SlackConstants.BlockIds.PERSONAL_PASSWORD]?.get(SlackConstants.ActionIds.PERSONAL_PASSWORD)?.value
 
         if (teamName.isNullOrBlank()) throw InputParseException("팀 이름을 입력해주세요.")
@@ -163,7 +157,6 @@ class CreateRegularMeetingSlackHandler(
         if (endTimeStr.isNullOrBlank()) throw InputParseException("종료 시간을 선택해주세요.")
         if (startDateStr.isNullOrBlank()) throw InputParseException("시작 날짜를 선택해주세요.")
         if (endDateStr.isNullOrBlank()) throw InputParseException("종료 날짜를 선택해주세요.")
-        if (spacePassword.isNullOrBlank()) throw InputParseException("공간 비밀번호를 입력해주세요.")
         if (personalPassword.isNullOrBlank()) throw InputParseException("개인 비밀번호를 입력해주세요.")
 
         val timeRangeStr = "$startTimeStr~$endTimeStr"
@@ -176,7 +169,7 @@ class CreateRegularMeetingSlackHandler(
         return CreateRegularMeetingCommand(
             spaceId = spaceId,
             teamName = teamName,
-            password = spacePassword,
+            password = null,
             rawPersonalPassword = personalPassword,
             dayOfWeek = DayOfWeek.valueOf(dayOfWeekStr),
             startTime = startTime,
@@ -223,10 +216,6 @@ class CreateRegularMeetingSlackHandler(
                         Blocks.input {
                             it.blockId(SlackConstants.BlockIds.END_DATE).label(BlockCompositions.plainText(SlackConstants.Keywords.END_DATE))
                                 .element(BlockElements.datePicker { p -> p.actionId(SlackConstants.ActionIds.END_DATE) })
-                        },
-                        Blocks.input {
-                            it.blockId(SlackConstants.BlockIds.SPACE_PASSWORD).label(BlockCompositions.plainText(SlackConstants.Keywords.SPACE_PASSWORD))
-                                .element(BlockElements.plainTextInput { p -> p.actionId(SlackConstants.ActionIds.SPACE_PASSWORD) })
                         },
                         Blocks.input {
                             it.blockId(SlackConstants.BlockIds.PERSONAL_PASSWORD).label(BlockCompositions.plainText(SlackConstants.Keywords.PERSONAL_PASSWORD))

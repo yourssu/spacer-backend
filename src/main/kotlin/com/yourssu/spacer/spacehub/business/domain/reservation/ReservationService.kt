@@ -28,7 +28,10 @@ class ReservationService(
     fun create(command: CreateReservationCommand): Long {
         val space: Space = spaceReader.getById(command.spaceId)
         val reservationTime = ReservationTime(command.startDateTime, command.endDateTime)
-        passwordEncoder.matchesOrThrow(command.password, space.getEncryptedReservationPassword(), "예약 비밀번호가 일치하지 않습니다.")
+
+        if (command.password != null) {
+            passwordEncoder.matchesOrThrow(command.password, space.getEncryptedReservationPassword(), "예약 비밀번호가 일치하지 않습니다.")
+        }
         reservationValidator.validateTime(space, reservationTime)
 
         PasswordValidator.validate(PasswordFormat.PERSONAL_RESERVATION_PASSWORD, command.rawPersonalPassword)

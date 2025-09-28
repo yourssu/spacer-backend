@@ -58,7 +58,6 @@ class CreateReservationHandler(
                     .setRequired(true)
                     .build()
             )
-            .addActionRow(TextInput.create("password", "공간 비밀번호", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(
                 TextInput.create("raw_personal_password", "개인 비밀번호", TextInputStyle.SHORT).setRequired(true).build()
             )
@@ -102,7 +101,7 @@ class CreateReservationHandler(
             bookerName = event.getValue("user_name")!!.asString,
             startDateTime = LocalDateTime.of(date, startTime),
             endDateTime = LocalDateTime.of(date, endTime),
-            password = event.getValue("password")!!.asString,
+            password = null,
             rawPersonalPassword = event.getValue("raw_personal_password")!!.asString
         )
     }
