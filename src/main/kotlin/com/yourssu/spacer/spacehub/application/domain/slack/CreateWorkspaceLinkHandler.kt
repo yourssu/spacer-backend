@@ -10,7 +10,7 @@ import com.slack.api.model.block.composition.BlockCompositions
 import com.slack.api.model.block.element.BlockElements
 import com.slack.api.model.view.View
 import com.slack.api.model.view.Views
-import com.yourssu.spacer.spacehub.application.support.constants.Commands
+import com.yourssu.spacer.spacehub.application.support.constants.SlashCommands
 import com.yourssu.spacer.spacehub.application.support.constants.SlackConstants
 import com.yourssu.spacer.spacehub.business.domain.authentication.AuthenticationService
 import com.yourssu.spacer.spacehub.business.domain.authentication.LoginCommand
@@ -33,7 +33,7 @@ class CreateWorkspaceLinkHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = Commands.WORKSPACE_LINK_CREATE
+    override val command = SlashCommands.WORKSPACE_LINK_CREATE
     override val callbackId = SlackConstants.WORKSPACE_LINK_MODAL_SUBMIT
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {

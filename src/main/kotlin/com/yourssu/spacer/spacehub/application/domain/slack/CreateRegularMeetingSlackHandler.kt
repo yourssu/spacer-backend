@@ -13,7 +13,7 @@ import com.slack.api.model.block.composition.OptionObject
 import com.slack.api.model.block.element.BlockElements
 import com.slack.api.model.view.View
 import com.slack.api.model.view.Views
-import com.yourssu.spacer.spacehub.application.support.constants.Commands
+import com.yourssu.spacer.spacehub.application.support.constants.SlashCommands
 import com.yourssu.spacer.spacehub.application.support.constants.SlackConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
 import com.yourssu.spacer.spacehub.application.support.utils.InputParser
@@ -44,7 +44,7 @@ class CreateRegularMeetingSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = Commands.REGULAR_MEETING_CREATE
+    override val command = SlashCommands.REGULAR_MEETING_CREATE
     override val actionId = SlackConstants.REGULAR_MEETING_CREATE_SPACE_SELECT
     override val callbackId = SlackConstants.REGULAR_MEETING_CREATE_MODAL_SUBMIT
 

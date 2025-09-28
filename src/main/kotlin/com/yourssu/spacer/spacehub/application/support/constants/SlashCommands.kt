@@ -1,6 +1,6 @@
 package com.yourssu.spacer.spacehub.application.support.constants
 
-object Commands {
+object SlashCommands {
     const val SERVER_LINK_CREATE = "/서버등록"
     const val WORKSPACE_LINK_CREATE = "/워크스페이스등록"
     const val RESERVATION_CREATE = "/예약생성"

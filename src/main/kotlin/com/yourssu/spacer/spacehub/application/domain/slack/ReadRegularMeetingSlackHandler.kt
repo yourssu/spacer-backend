@@ -5,7 +5,7 @@ import com.slack.api.bolt.context.builtin.ActionContext
 import com.slack.api.bolt.context.builtin.SlashCommandContext
 import com.slack.api.bolt.request.builtin.SlashCommandRequest
 import com.slack.api.bolt.response.Response
-import com.yourssu.spacer.spacehub.application.support.constants.Commands
+import com.yourssu.spacer.spacehub.application.support.constants.SlashCommands
 import com.yourssu.spacer.spacehub.application.support.constants.SlackConstants
 import com.yourssu.spacer.spacehub.business.domain.meeting.ReadRegularMeetingsResult
 import com.yourssu.spacer.spacehub.business.domain.meeting.RegularMeetingService
@@ -25,7 +25,7 @@ class ReadRegularMeetingSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = Commands.REGULAR_MEETING_READ
+    override val command = SlashCommands.REGULAR_MEETING_READ
     override val actionId = SlackConstants.REGULAR_MEETING_READ_SPACE_SELECT
 
     override fun handle(req: SlashCommandRequest, ctx: SlashCommandContext): Response {
