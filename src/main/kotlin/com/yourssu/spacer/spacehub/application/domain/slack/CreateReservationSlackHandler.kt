@@ -36,6 +36,7 @@ class CreateReservationSlackHandler(
     private val spaceReader: SpaceReader,
     private val uiFactory: SlackUIFactory,
     private val inputParser: InputParser,
+    private val slackReplyHelper: SlackReplyHelper,
     private val slackTimeOptionFactory: SlackTimeOptionFactory
 ) : SlackSlashHandler, SlackViewSubmissionHandler, SlackBlockActionHandler {
 
@@ -89,6 +90,7 @@ class CreateReservationSlackHandler(
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
         val metadataParts = req.view.privateMetadata.split(":")
+        val channelId = metadataParts[0]
         val spaceId = metadataParts[1].toLong()
 
         try {
@@ -100,7 +102,7 @@ class CreateReservationSlackHandler(
             val endTime = values(req)["end_time_block"]?.get("end_time_input")?.selectedOption?.value ?: ""
 
             val message = "예약 완료: ${command.bookerName} / $dateStr $startTime~$endTime"
-            ctx.respond { it.responseType("ephemeral").text("✅ $message") }
+            slackReplyHelper.sendSuccess(ctx, channelId, message)
             logger.info("슬랙 봇 예약 생성 성공: ${command.bookerName}, ${command.startDateTime} ~ ${command.endDateTime}")
 
         } catch (e: InputParseException) {
@@ -126,7 +128,7 @@ class CreateReservationSlackHandler(
             val errors = mapOf(SlackConstants.BlockIds.START_TIME to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            ctx.respond { it.responseType("ephemeral").text(SlackConstants.Messages.UNKNOWN_ERROR) }
+            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
             logger.error("알 수 없는 예약 생성 오류", e)
         }
         return ctx.ack()

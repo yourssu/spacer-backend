@@ -29,7 +29,8 @@ import kotlin.collections.map
 class DeleteRegularMeetingSlackHandler(
     private val uiFactory: SlackUIFactory,
     private val regularMeetingService: RegularMeetingService,
-    private val slackWorkspaceLinkReader: SlackWorkspaceLinkReader
+    private val slackWorkspaceLinkReader: SlackWorkspaceLinkReader,
+    private val slackReplyHelper: SlackReplyHelper
 ) : SlackSlashHandler, SlackBlockActionHandler, SlackViewSubmissionHandler {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -83,6 +84,7 @@ class DeleteRegularMeetingSlackHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
+        val channelId = req.view.privateMetadata
         try {
             val values = req.view.state.values
 
@@ -97,7 +99,8 @@ class DeleteRegularMeetingSlackHandler(
             if (password.isBlank()) throw InputParseException("비밀번호를 입력해주세요.")
 
             regularMeetingService.delete(meetingId, password)
-            ctx.respond { it.responseType("ephemeral").text("✅ 정기 회의가 성공적으로 취소되었습니다.") }
+
+            slackReplyHelper.sendSuccess(ctx, channelId, "정기 회의가 성공적으로 취소되었습니다.")
 
         } catch (e: PasswordNotMatchException) {
             val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
@@ -106,8 +109,8 @@ class DeleteRegularMeetingSlackHandler(
             val errors = mapOf(SlackConstants.BlockIds.REGULAR_MEETING_SELECT to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            ctx.respond { it.responseType("ephemeral").text(SlackConstants.Messages.UNKNOWN_ERROR) }
             logger.error("알 수 없는 정기 회의 취소 오류", e)
+            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생하여 취소에 실패했습니다.")
         }
 
         return ctx.ack()
