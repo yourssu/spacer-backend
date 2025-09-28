@@ -19,6 +19,7 @@ object DiscordConstants {
     const val REGULAR_MEETING_READ_SPACE_SELECT = "regular_meeting_read_space_select"
 
     const val REGULAR_MEETING_DELETE_SPACE_SELECT = "regular_meeting_delete_space_select"
+    const val REGULAR_MEETING_DELETE_REGULAR_MEETING_SELECT = "regular_meeting_delete_regular_meeting_select"
     const val REGULAR_MEETING_DELETE_MODAL = "regular_meeting_delete_modal"
 
     object EventIds {
