@@ -163,7 +163,7 @@ class CreateRegularMeetingSlackHandler(
         val (startTime, endTime) = inputParser.parseTimeRange(timeRangeStr)
 
         val dateRangeStr = "$startDateStr~$endDateStr"
-        val (startDate, endDate) = inputParser.parseDateRange(dateRangeStr)
+        val (startDate, endDate) = inputParser.parseSlackDateRange(dateRangeStr)
 
 
         return CreateRegularMeetingCommand(
