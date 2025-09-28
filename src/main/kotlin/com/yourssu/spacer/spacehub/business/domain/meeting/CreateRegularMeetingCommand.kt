@@ -7,7 +7,7 @@ import java.time.LocalTime
 data class CreateRegularMeetingCommand(
     val spaceId: Long,
     val teamName: String,
-    val password: String,
+    val password: String?,
     val rawPersonalPassword: String,
     val dayOfWeek: DayOfWeek,
     val startTime: LocalTime,

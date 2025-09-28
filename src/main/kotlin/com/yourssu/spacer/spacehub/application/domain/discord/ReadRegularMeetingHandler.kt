@@ -5,8 +5,6 @@ import com.yourssu.spacer.spacehub.business.domain.meeting.RegularMeetingService
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.awt.Color
@@ -55,18 +53,7 @@ class ReadRegularMeetingHandler(
                     embed.addField(title, content, false)
                 }
 
-                val deleteMenu = StringSelectMenu.create(DiscordConstants.REGULAR_MEETING_DELETE_SPACE_SELECT)
-                    .setPlaceholder("삭제할 정기 회의를 선택하세요")
-                    .addOptions(
-                        result.regularMeetingDtos.map {
-                            val label = "${it.teamName} (${it.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)} ${it.startTime})"
-                            SelectOption.of(label, it.id.toString())
-                        }
-                    )
-                    .build()
-
                 event.replyEmbeds(embed.build())
-                    .addActionRow(deleteMenu)
                     .setEphemeral(true)
                     .queue()
             }

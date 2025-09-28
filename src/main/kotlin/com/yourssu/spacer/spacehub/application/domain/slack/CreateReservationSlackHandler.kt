@@ -13,14 +13,13 @@ import com.slack.api.model.block.composition.OptionObject
 import com.slack.api.model.block.element.BlockElements
 import com.slack.api.model.view.View
 import com.slack.api.model.view.Views
-import com.yourssu.spacer.spacehub.application.support.constants.Commands
+import com.yourssu.spacer.spacehub.application.support.constants.SlashCommands
 import com.yourssu.spacer.spacehub.application.support.constants.SlackConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
 import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.reservation.CreateReservationCommand
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
 import com.yourssu.spacer.spacehub.business.support.exception.InvalidReservationException
-import com.yourssu.spacer.spacehub.business.support.exception.PasswordNotMatchException
 import com.yourssu.spacer.spacehub.business.support.exception.ReservationConflictException
 import com.yourssu.spacer.spacehub.implement.domain.slack.SlackWorkspaceLinkReader
 import com.yourssu.spacer.spacehub.implement.domain.space.SpaceReader
@@ -42,7 +41,7 @@ class CreateReservationSlackHandler(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = Commands.RESERVATION_CREATE
+    override val command = "/${SlashCommands.RESERVATION_CREATE}"
     override val actionId = SlackConstants.RESERVATION_CREATE_SPACE_SELECT
     override val callbackId = SlackConstants.RESERVATION_CREATE_MODAL_SUBMIT
 
@@ -117,7 +116,6 @@ class CreateReservationSlackHandler(
                 SlackConstants.Keywords.RESERVATION_DATE in errorMessage -> SlackConstants.BlockIds.RESERVATION_DATE
                 SlackConstants.Keywords.START_TIME in errorMessage -> SlackConstants.BlockIds.START_TIME
                 SlackConstants.Keywords.END_TIME in errorMessage -> SlackConstants.BlockIds.END_TIME
-                SlackConstants.Keywords.SPACE_PASSWORD in errorMessage -> SlackConstants.BlockIds.SPACE_PASSWORD
                 SlackConstants.Keywords.PERSONAL_PASSWORD in errorMessage -> SlackConstants.BlockIds.PERSONAL_PASSWORD
                 else -> SlackConstants.BlockIds.BOOKER_NAME
             }
@@ -125,9 +123,6 @@ class CreateReservationSlackHandler(
             return ctx.ack { it.responseAction("errors").errors(errors)}
         } catch (e: ReservationConflictException) {
             val errors = mapOf(SlackConstants.BlockIds.START_TIME to e.message)
-            return ctx.ack { it.responseAction("errors").errors(errors) }
-        } catch (e: PasswordNotMatchException) {
-            val errors = mapOf(SlackConstants.BlockIds.SPACE_PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: InvalidReservationException) {
             val errors = mapOf(SlackConstants.BlockIds.START_TIME to e.message)
@@ -149,14 +144,12 @@ class CreateReservationSlackHandler(
             val dateStr = values[SlackConstants.BlockIds.RESERVATION_DATE]?.get(SlackConstants.ActionIds.RESERVATION_DATE)?.selectedDate
             val startTime = values[SlackConstants.BlockIds.START_TIME]?.get(SlackConstants.ActionIds.START_TIME)?.selectedOption?.value
             val endTime = values[SlackConstants.BlockIds.END_TIME]?.get(SlackConstants.ActionIds.END_TIME)?.selectedOption?.value
-            val password = values[SlackConstants.BlockIds.SPACE_PASSWORD]?.get(SlackConstants.ActionIds.SPACE_PASSWORD)?.value
             val rawPersonalPassword = values[SlackConstants.BlockIds.PERSONAL_PASSWORD]?.get(SlackConstants.ActionIds.PERSONAL_PASSWORD)?.value
 
             if (bookerName.isNullOrBlank()) throw InputParseException("${SlackConstants.Keywords.BOOKER_NAME}을 입력해주세요.")
             if (dateStr.isNullOrBlank()) throw InputParseException("${SlackConstants.Keywords.RESERVATION_DATE}를 선택해주세요.")
             if (startTime.isNullOrBlank()) throw InputParseException("${SlackConstants.Keywords.START_TIME}을 선택해주세요.")
             if (endTime.isNullOrBlank()) throw InputParseException("${SlackConstants.Keywords.END_TIME}을 선택해주세요.")
-            if (password.isNullOrBlank()) throw InputParseException("${SlackConstants.Keywords.SPACE_PASSWORD}를 입력해주세요.")
             if (rawPersonalPassword.isNullOrBlank()) throw InputParseException("${SlackConstants.Keywords.PERSONAL_PASSWORD}를 입력해주세요.")
 
             val timeRangeStr = "$startTime~$endTime"
@@ -169,7 +162,7 @@ class CreateReservationSlackHandler(
                 bookerName = bookerName,
                 startDateTime = LocalDateTime.of(date, startLocalTime),
                 endDateTime = LocalDateTime.of(date, endLocalTime),
-                password = password,
+                password = null,
                 rawPersonalPassword = rawPersonalPassword
             )
         } catch (e: InputParseException) {
@@ -195,7 +188,6 @@ class CreateReservationSlackHandler(
                         Blocks.input { it.blockId(SlackConstants.BlockIds.RESERVATION_DATE).label(BlockCompositions.plainText(SlackConstants.Keywords.RESERVATION_DATE)).element(BlockElements.datePicker { p -> p.actionId(SlackConstants.ActionIds.RESERVATION_DATE) }) },
                         Blocks.input { it.blockId(SlackConstants.BlockIds.START_TIME).label(BlockCompositions.plainText(SlackConstants.Keywords.START_TIME)).element(BlockElements.staticSelect { s -> s.actionId(SlackConstants.ActionIds.START_TIME).options(timeOptions) }) },
                         Blocks.input { it.blockId(SlackConstants.BlockIds.END_TIME).label(BlockCompositions.plainText(SlackConstants.Keywords.END_TIME)).element(BlockElements.staticSelect { s -> s.actionId(SlackConstants.ActionIds.END_TIME).options(timeOptions) }) },
-                        Blocks.input { it.blockId(SlackConstants.BlockIds.SPACE_PASSWORD).label(BlockCompositions.plainText(SlackConstants.Keywords.SPACE_PASSWORD)).element(BlockElements.plainTextInput { p -> p.actionId(SlackConstants.ActionIds.SPACE_PASSWORD) }) },
                         Blocks.input { it.blockId(SlackConstants.BlockIds.PERSONAL_PASSWORD).label(BlockCompositions.plainText(SlackConstants.Keywords.PERSONAL_PASSWORD)).element(BlockElements.plainTextInput { p -> p.actionId(SlackConstants.ActionIds.PERSONAL_PASSWORD) }) }
                     )
                 )

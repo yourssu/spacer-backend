@@ -1,6 +1,7 @@
 package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
+import com.yourssu.spacer.spacehub.application.support.constants.SlashCommands
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -20,11 +21,13 @@ class DiscordCommandListener(
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
         when (event.name) {
-            "서버등록" -> createServerLinkHandler.handleSlashCommand(event)
-            "동방예약" -> createReservationHandler.handleSlashCommand(event)
-            "예약조회" -> readReservationHandler.handleSlashCommand(event)
-            "정기회의등록" -> createRegularMeetingHandler.handleSlashCommand(event)
-            "정기회의조회" -> readRegularMeetingHandler.handleSlashCommand(event)
+            SlashCommands.SERVER_LINK_CREATE -> createServerLinkHandler.handleSlashCommand(event)
+            SlashCommands.RESERVATION_CREATE -> createReservationHandler.handleSlashCommand(event)
+            SlashCommands.RESERVATION_READ -> readReservationHandler.handleSlashCommand(event)
+            SlashCommands.RESERVATION_DELETE -> deleteReservationHandler.handleSlashCommand(event)
+            SlashCommands.REGULAR_MEETING_CREATE -> createRegularMeetingHandler.handleSlashCommand(event)
+            SlashCommands.REGULAR_MEETING_READ -> readRegularMeetingHandler.handleSlashCommand(event)
+            SlashCommands.REGULAR_MEETING_DELETE -> deleteRegularMeetingHandler.handleSlashCommand(event)
         }
     }
 
@@ -36,11 +39,15 @@ class DiscordCommandListener(
                 readReservationHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.RESERVATION_DELETE_SPACE_SELECT) ->
                 deleteReservationHandler.handleSelectMenu(event)
+            event.componentId.startsWith(DiscordConstants.RESERVATION_DELETE_RESERVATION_SELECT) ->
+                deleteReservationHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.RECURRING_RESERVATION_CREATE_SPACE_SELECT) ->
                 createRegularMeetingHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.REGULAR_MEETING_READ_SPACE_SELECT) ->
                 readRegularMeetingHandler.handleSelectMenu(event)
             event.componentId.startsWith(DiscordConstants.REGULAR_MEETING_DELETE_SPACE_SELECT) ->
+                deleteRegularMeetingHandler.handleSelectMenu(event)
+            event.componentId.startsWith(DiscordConstants.REGULAR_MEETING_DELETE_REGULAR_MEETING_SELECT) ->
                 deleteRegularMeetingHandler.handleSelectMenu(event)
         }
     }

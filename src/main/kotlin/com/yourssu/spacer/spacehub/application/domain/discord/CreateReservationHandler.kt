@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
+import com.yourssu.spacer.spacehub.application.support.utils.DateFormatUtils
 import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.reservation.CreateReservationCommand
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
@@ -46,8 +47,8 @@ class CreateReservationHandler(
         val modal = Modal.create("${DiscordConstants.RESERVATION_CREATE_MODAL}:$spaceId", "예약 정보 입력 (형식 맞춰서)")
             .addActionRow(TextInput.create("user_name", "예약자명", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(
-                TextInput.create("date", "예약 날짜 (YYYY-MM-DD, 공백 없이)", TextInputStyle.SHORT)
-                    .setPlaceholder("YYYY-MM-DD")
+                TextInput.create("date", "예약 날짜 (YY.MM.DD, 공백 없이)", TextInputStyle.SHORT)
+                    .setPlaceholder(DateFormatUtils.today())
                     .setRequired(true)
                     .build()
             )
@@ -57,7 +58,6 @@ class CreateReservationHandler(
                     .setRequired(true)
                     .build()
             )
-            .addActionRow(TextInput.create("password", "공간 비밀번호", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(
                 TextInput.create("raw_personal_password", "개인 비밀번호", TextInputStyle.SHORT).setRequired(true).build()
             )
@@ -101,7 +101,7 @@ class CreateReservationHandler(
             bookerName = event.getValue("user_name")!!.asString,
             startDateTime = LocalDateTime.of(date, startTime),
             endDateTime = LocalDateTime.of(date, endTime),
-            password = event.getValue("password")!!.asString,
+            password = null,
             rawPersonalPassword = event.getValue("raw_personal_password")!!.asString
         )
     }

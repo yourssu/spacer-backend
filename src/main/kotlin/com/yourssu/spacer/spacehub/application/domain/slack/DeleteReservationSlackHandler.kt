@@ -12,7 +12,7 @@ import com.slack.api.model.block.composition.BlockCompositions
 import com.slack.api.model.block.element.BlockElements
 import com.slack.api.model.view.View
 import com.slack.api.model.view.Views
-import com.yourssu.spacer.spacehub.application.support.constants.Commands
+import com.yourssu.spacer.spacehub.application.support.constants.SlashCommands
 import com.yourssu.spacer.spacehub.application.support.constants.SlackConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
 import com.yourssu.spacer.spacehub.application.support.utils.InputParser
@@ -34,7 +34,7 @@ class DeleteReservationSlackHandler(
 ): SlackSlashHandler, SlackBlockActionHandler, SlackViewSubmissionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val command = Commands.RESERVATION_DELETE
+    override val command = "/${SlashCommands.RESERVATION_DELETE}"
     override val actionId = SlackConstants.RESERVATION_DELETE_SPACE_SELECT
     override val callbackId = SlackConstants.RESERVATION_DELETE_MODAL_SUBMIT
 
