@@ -62,8 +62,6 @@ class CreateWorkspaceLinkHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
-        val channelId = req.view.privateMetadata
-
         val values = req.view.state.values
         val email = values[SlackConstants.BlockIds.EMAIL]?.get(SlackConstants.ActionIds.EMAIL)?.value ?: ""
         val password = values[SlackConstants.BlockIds.PASSWORD]?.get(SlackConstants.ActionIds.PASSWORD)?.value ?: ""
@@ -86,7 +84,20 @@ class CreateWorkspaceLinkHandler(
             )
             slackWorkspaceLinkRepository.save(updatedLink)
 
-            slackReplyHelper.sendSuccess(ctx, channelId, "워크스페이스가 SPACER와 성공적으로 연동되었습니다!")
+            val successView = Views.view { view ->
+                view.type("modal")
+                    .title(Views.viewTitle { it.type("plain_text").text("연동 완료").emoji(true) })
+                    .close(Views.viewClose { it.type("plain_text").text("확인").emoji(true) })
+                    .blocks(
+                        Blocks.asBlocks(
+                            Blocks.section { section ->
+                                section.text(BlockCompositions.markdownText("✅ 워크스페이스가 SPACER와 성공적으로 연동되었습니다!"))
+                            }
+                        )
+                    )
+            }
+
+            return ctx.ack { it.responseAction("update").view(successView) }
         } catch (e: OrganizationNotFoundException) {
             val errors = mapOf(SlackConstants.BlockIds.EMAIL to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
@@ -94,10 +105,10 @@ class CreateWorkspaceLinkHandler(
             val errors = mapOf(SlackConstants.BlockIds.PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
             logger.error("알 수 없는 워크스페이스 연동 오류", e)
+            val errorView = slackReplyHelper.createErrorView(SlackConstants.Messages.UNKNOWN_ERROR)
+            return ctx.ack { it.responseAction("update").view(errorView) }
         }
-        return ctx.ack()
     }
 
     private fun buildServerLinkModal(channelId: String): View {

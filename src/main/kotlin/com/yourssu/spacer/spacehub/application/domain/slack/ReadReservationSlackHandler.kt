@@ -82,9 +82,7 @@ class ReadReservationSlackHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
-        val metadataParts = req.view.privateMetadata.split(":")
-        val channelId = metadataParts[0]
-        val spaceId = metadataParts[1].toLong()
+        val spaceId = req.view.privateMetadata.split(":")[1].toLong()
 
         try {
             val dateStr = req.view.state.values[SlackConstants.BlockIds.RESERVATION_DATE]
@@ -109,16 +107,22 @@ class ReadReservationSlackHandler(
                 "📅 *${space.name}* (${date}) 예약 현황\n$reservationList"
             }
 
-            slackReplyHelper.sendSuccess(ctx, channelId, message)
+            val successView = Views.view { view ->
+                view.type("modal")
+                    .title(Views.viewTitle { it.type("plain_text").text("예약 현황 조회").emoji(true) })
+                    .close(Views.viewClose { it.type("plain_text").text("확인").emoji(true) })
+                    .blocks(Blocks.asBlocks(Blocks.section { it.text(BlockCompositions.markdownText(message)) }))
+            }
+            return ctx.ack { it.responseAction("update").view(successView) }
 
         } catch (e: InputParseException) {
-            slackReplyHelper.sendError(ctx, channelId, "입력 오류: ${e.message}")
+            val errorView = slackReplyHelper.createErrorView("입력 오류: ${e.message}")
+            return ctx.ack { it.responseAction("update").view(errorView) }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생하여 조회에 실패했습니다.")
             logger.error("알 수 없는 예약 조회 오류", e)
+            val errorView = slackReplyHelper.createErrorView(SlackConstants.Messages.UNKNOWN_ERROR)
+            return ctx.ack { it.responseAction("update").view(errorView) }
         }
-
-        return ctx.ack()
     }
 
     private fun buildReadReservationModal(spaceId: String, channelId: String): View {

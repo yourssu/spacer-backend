@@ -87,9 +87,7 @@ class CreateRegularMeetingSlackHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
-        val metadataParts = req.view.privateMetadata.split(":")
-        val channelId = metadataParts[0]
-        val spaceId = metadataParts[1].toLong()
+        val spaceId = req.view.privateMetadata.split(":")[1].toLong()
 
         try {
             val command = createCommandFromModal(req, spaceId)
@@ -97,14 +95,21 @@ class CreateRegularMeetingSlackHandler(
 
             val successMessage = """
                 *정기 회의 예약 완료*
-                >총 *${createdDates.size}건*의 예약이 모두 성공적으로 생성되었습니다.
+                >✅ 총 *${createdDates.size}건*의 예약이 모두 성공적으로 생성되었습니다.
                 >
                 > • *팀명*: ${command.teamName}
                 > • *기간*: ${command.startDate} ~ ${command.endDate}
                 > • *요일*: ${command.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.KOREAN)}
                 > • *시간*: ${command.startTime}~${command.endTime}
             """.trimIndent()
-            slackReplyHelper.sendSuccess(ctx, channelId, successMessage)
+
+            val successView = Views.view { view ->
+                view.type("modal")
+                    .title(Views.viewTitle { it.type("plain_text").text("예약 완료").emoji(true) })
+                    .close(Views.viewClose { it.type("plain_text").text("확인").emoji(true) })
+                    .blocks(Blocks.asBlocks(Blocks.section { it.text(BlockCompositions.markdownText(successMessage)) }))
+            }
+            return ctx.ack { it.responseAction("update").view(successView) }
 
         } catch (e: InputParseException) {
             val errorMessage = e.message ?: "입력값이 올바르지 않습니다."
@@ -134,10 +139,10 @@ class CreateRegularMeetingSlackHandler(
             val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
             logger.error("알 수 없는 정기 회의 생성 오류", e)
+            val errorView = slackReplyHelper.createErrorView(SlackConstants.Messages.UNKNOWN_ERROR)
+            return ctx.ack { it.responseAction("update").view(errorView) }
         }
-        return ctx.ack()
     }
 
     private fun createCommandFromModal(req: ViewSubmissionPayload, spaceId: Long): CreateRegularMeetingCommand {

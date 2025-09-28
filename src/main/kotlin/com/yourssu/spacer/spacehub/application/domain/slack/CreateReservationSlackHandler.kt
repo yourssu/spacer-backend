@@ -89,9 +89,7 @@ class CreateReservationSlackHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
-        val metadataParts = req.view.privateMetadata.split(":")
-        val channelId = metadataParts[0]
-        val spaceId = metadataParts[1].toLong()
+        val spaceId = req.view.privateMetadata.split(":")[1].toLong()
 
         try {
             val command = createCommandFromModal(req, spaceId)
@@ -101,9 +99,16 @@ class CreateReservationSlackHandler(
             val startTime = values(req)["start_time_block"]?.get("start_time_input")?.selectedOption?.value ?: ""
             val endTime = values(req)["end_time_block"]?.get("end_time_input")?.selectedOption?.value ?: ""
 
-            val message = "예약 완료: ${command.bookerName} / $dateStr $startTime~$endTime"
-            slackReplyHelper.sendSuccess(ctx, channelId, message)
+            val successMessage = "✅ 예약 완료: ${command.bookerName} / $dateStr $startTime~$endTime"
             logger.info("슬랙 봇 예약 생성 성공: ${command.bookerName}, ${command.startDateTime} ~ ${command.endDateTime}")
+
+            val successView = Views.view { view ->
+                view.type("modal")
+                    .title(Views.viewTitle { it.type("plain_text").text("예약 완료").emoji(true) })
+                    .close(Views.viewClose { it.type("plain_text").text("확인").emoji(true) })
+                    .blocks(Blocks.asBlocks(Blocks.section { it.text(BlockCompositions.markdownText(successMessage)) }))
+            }
+            return ctx.ack { it.responseAction("update").view(successView) }
 
         } catch (e: InputParseException) {
             val errorMessage = e.message ?: "입력값이 올바르지 않습니다."
@@ -128,10 +133,10 @@ class CreateReservationSlackHandler(
             val errors = mapOf(SlackConstants.BlockIds.START_TIME to e.message)
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생했습니다. 관리자에게 문의하세요.")
             logger.error("알 수 없는 예약 생성 오류", e)
+            val errorView = slackReplyHelper.createErrorView(SlackConstants.Messages.UNKNOWN_ERROR)
+            return ctx.ack { it.responseAction("update").view(errorView) }
         }
-        return ctx.ack()
     }
 
     private fun values(req: ViewSubmissionPayload) = req.view.state.values

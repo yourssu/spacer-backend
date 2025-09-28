@@ -84,7 +84,6 @@ class DeleteRegularMeetingSlackHandler(
     }
 
     override fun handle(req: ViewSubmissionPayload, ctx: ViewSubmissionContext): Response {
-        val channelId = req.view.privateMetadata
         try {
             val values = req.view.state.values
 
@@ -100,7 +99,13 @@ class DeleteRegularMeetingSlackHandler(
 
             regularMeetingService.delete(meetingId, password)
 
-            slackReplyHelper.sendSuccess(ctx, channelId, "정기 회의가 성공적으로 취소되었습니다.")
+            val successView = Views.view { view ->
+                view.type("modal")
+                    .title(Views.viewTitle { it.type("plain_text").text("취소 완료").emoji(true) })
+                    .close(Views.viewClose { it.type("plain_text").text("확인").emoji(true) })
+                    .blocks(Blocks.asBlocks(Blocks.section { it.text(BlockCompositions.markdownText("✅ 정기 회의가 성공적으로 취소되었습니다.")) }))
+            }
+            return ctx.ack { it.responseAction("update").view(successView) }
 
         } catch (e: PasswordNotMatchException) {
             val errors = mapOf(SlackConstants.BlockIds.PERSONAL_PASSWORD to e.message)
@@ -110,10 +115,9 @@ class DeleteRegularMeetingSlackHandler(
             return ctx.ack { it.responseAction("errors").errors(errors) }
         } catch (e: Exception) {
             logger.error("알 수 없는 정기 회의 취소 오류", e)
-            slackReplyHelper.sendError(ctx, channelId, "알 수 없는 오류가 발생하여 취소에 실패했습니다.")
+            val errorView = slackReplyHelper.createErrorView(SlackConstants.Messages.UNKNOWN_ERROR)
+            return ctx.ack { it.responseAction("update").view(errorView) }
         }
-
-        return ctx.ack()
     }
 
     private fun buildDeleteModal(channelId: String, meetings: List<RegularMeetingDto>): View {
