@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
+import com.yourssu.spacer.spacehub.application.support.utils.DateFormatUtils
 import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.meeting.CreateRegularMeetingCommand
 import com.yourssu.spacer.spacehub.business.domain.meeting.RegularMeetingService
@@ -45,6 +46,8 @@ class CreateRegularMeetingHandler(
 
     fun handleSelectMenu(event: StringSelectInteractionEvent) {
         val spaceId = event.selectedOptions.first().value
+        val todayDateStr = DateFormatUtils.today()
+        val todayDateRangeStr = "$todayDateStr~$todayDateStr"
 
         val modal = Modal.create("${DiscordConstants.RECURRING_RESERVATION_CREATE_MODAL}:$spaceId", "정기 회의 정보 입력 (형식 맞춰서)")
             .addActionRow(TextInput.create("team_name", "팀 이름", TextInputStyle.SHORT).setRequired(true).build())
@@ -61,8 +64,8 @@ class CreateRegularMeetingHandler(
                     .build()
             )
             .addActionRow(
-                TextInput.create("date_range", "예약 기간 (YYYY-MM-DD~YYYY-MM-DD, 공백 없이)", TextInputStyle.SHORT)
-                    .setPlaceholder("YYYY-MM-DD~YYYY-MM-DD")
+                TextInput.create("date_range", "예약 기간 (YY.MM.DD~YY.MM.DD, 공백 없이)", TextInputStyle.SHORT)
+                    .setPlaceholder(todayDateRangeStr)
                     .setRequired(true)
                     .build()
             )

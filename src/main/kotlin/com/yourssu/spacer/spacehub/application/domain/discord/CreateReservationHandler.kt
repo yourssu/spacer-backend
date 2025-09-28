@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
+import com.yourssu.spacer.spacehub.application.support.utils.DateFormatUtils
 import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.reservation.CreateReservationCommand
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
@@ -46,8 +47,8 @@ class CreateReservationHandler(
         val modal = Modal.create("${DiscordConstants.RESERVATION_CREATE_MODAL}:$spaceId", "예약 정보 입력 (형식 맞춰서)")
             .addActionRow(TextInput.create("user_name", "예약자명", TextInputStyle.SHORT).setRequired(true).build())
             .addActionRow(
-                TextInput.create("date", "예약 날짜 (YYYY-MM-DD, 공백 없이)", TextInputStyle.SHORT)
-                    .setPlaceholder("YYYY-MM-DD")
+                TextInput.create("date", "예약 날짜 (YY.MM.DD, 공백 없이)", TextInputStyle.SHORT)
+                    .setPlaceholder(DateFormatUtils.today())
                     .setRequired(true)
                     .build()
             )

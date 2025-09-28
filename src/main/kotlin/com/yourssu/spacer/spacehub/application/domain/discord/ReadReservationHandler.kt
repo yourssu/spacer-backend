@@ -2,6 +2,7 @@ package com.yourssu.spacer.spacehub.application.domain.discord
 
 import com.yourssu.spacer.spacehub.application.support.constants.DiscordConstants
 import com.yourssu.spacer.spacehub.application.support.exception.InputParseException
+import com.yourssu.spacer.spacehub.application.support.utils.DateFormatUtils
 import com.yourssu.spacer.spacehub.application.support.utils.InputParser
 import com.yourssu.spacer.spacehub.business.domain.reservation.ReservationService
 import com.yourssu.spacer.spacehub.business.domain.space.SpaceService
@@ -15,7 +16,6 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.awt.Color
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Component
@@ -46,10 +46,10 @@ class ReadReservationHandler(
         val spaceId = event.selectedOptions.first().value
         val modal = Modal.create("${DiscordConstants.RESERVATION_READ_MODAL}:$spaceId", "날짜 입력")
             .addActionRow(
-                TextInput.create(DiscordConstants.EventIds.DATE, "조회할 날짜 (YYYY-MM-DD)", TextInputStyle.SHORT)
+                TextInput.create(DiscordConstants.EventIds.DATE, "조회할 날짜 (YY.MM.DD)", TextInputStyle.SHORT)
                     .setRequired(true)
-                    .setPlaceholder(LocalDate.now().toString())
-                    .setValue(LocalDate.now().toString())
+                    .setPlaceholder(DateFormatUtils.today())
+                    .setValue(DateFormatUtils.today())
                     .build()
             )
             .build()
